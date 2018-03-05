@@ -1,3 +1,9 @@
 {
-  "presets": ["jason"]
+    "presets": [ "latest", "react" ],
+    "plugins": [
+        "transform-react-jsx",
+        "transform-es2015-modules-commonjs",
+        "transform-class-properties",
+        "transform-object-rest-spread"
+    ]
 }
