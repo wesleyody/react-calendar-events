@@ -58,7 +58,9 @@
     "react-dnd-html5-backend": "^2.1.2",
     "react-dom": "^16.2.0",
     "release-script": "^1.0.0",
-    "rimraf": "^2.4.2"
+    "rimraf": "^2.4.2",
+    "webpack": "^4.1.0",
+    "webpack-dev-server": "^3.1.0"
   },
   "dependencies": {
     "classnames": "^2.1.3",
