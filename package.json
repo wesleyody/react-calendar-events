@@ -23,8 +23,9 @@
     "full calendar"
   ],
   "scripts": {
-    "clean": "rimraf lib",
-    "build": "webpack -p",
+    "babel": "babel ./src --out-dir ./lib",
+    "build": "npm run babel && npm run sass",
+    "sass": "cpx \"./src/**/*.scss\" ./lib",
     "lint": "eslint src",
     "release": "release",
     "precommit": "lint-staged"
@@ -53,6 +54,7 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-latest": "~6.16.0",
     "babel-preset-react": "^6.24.1",
+    "cpx": "^1.5.0",
     "css-loader": "^0.28.10",
     "eslint": "^3.0.0",
     "eslint-config-jason": "^4.0.0",
