@@ -66,11 +66,13 @@ class EventCell extends React.Component {
             end,
             selected
         );
+        const styleContainer = isAllDayEvent ? style : {};
+        const styleEvent = isAllDayEvent ? {} : style;
 
         return (
             <EventWrapper event={ event }>
                 <div
-                    style={{ ...props.style, ...style }}
+                    style={{ ...props.style, ...styleContainer }}
                     className={ cn( css.rbcEvent, className, xClassName,
                         isAllDayEvent ? css.rbcEventAllday : "",
                         continuesPrior ? css.rbcEventContinuesPrior : "",
@@ -85,7 +87,7 @@ class EventCell extends React.Component {
                             Event ?
                                 <Event event={ event } title={ title } isAllDay={ isAllDayEvent }/> :
                                 <div className={ css.rbcEventContent } title={ tooltip }>
-                                    <div className={ css.rbcEventHour }></div>
+                                    <div className={ css.rbcEventHour } style={ styleEvent }></div>
                                     { moment( event.start ).format( "HH:mm" ) + " " + title }
                                 </div>
                     }
