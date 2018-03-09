@@ -46,7 +46,6 @@
     "babel-core": "^6.7.6",
     "babel-eslint": "^6.0.2",
     "babel-loader": "^6.2.8",
-    "babel-plugin-object-assign": "^1.2.1",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
@@ -57,9 +56,6 @@
     "cpx": "^1.5.0",
     "css-loader": "^0.28.10",
     "eslint": "^3.0.0",
-    "eslint-config-jason": "^4.0.0",
-    "eslint-config-prettier": "^2.9.0",
-    "eslint-plugin-import": "^2.0.0",
     "eslint-plugin-react": "^6.8.0",
     "extract-text-webpack-plugin": "^1.0.1",
     "lint-staged": "^6.0.0",
@@ -68,13 +64,9 @@
     "react-dnd": "^2.1.4",
     "react-dnd-html5-backend": "^2.1.2",
     "react-dom": "^15.4.1",
-    "react-hot-loader": "^4.0.0",
     "release-script": "^1.0.0",
-    "rimraf": "^2.4.2",
     "sass-loader": "^6.0.7",
-    "style-loader": "^0.20.2",
-    "webpack": "^1.13.3",
-    "webpack-dev-server": "^1.16.2"
+    "webpack": "^1.13.3"
   },
   "dependencies": {
     "classnames": "^2.1.3",
