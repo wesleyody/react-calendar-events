@@ -568,8 +568,6 @@ button.rbcInput::-moz-focus-inner {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    display: flex;
-    align-items: center;
 }
 
 .rbcEventHour {
@@ -578,6 +576,7 @@ button.rbcInput::-moz-focus-inner {
     width: 10px;
     height: 10px;
     margin-right: 5px;
+    display: inline-block;
 }
 
 .rbcDaySlot .rbcTimeSlot {
