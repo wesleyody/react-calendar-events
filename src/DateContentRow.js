@@ -1,6 +1,5 @@
 import cn from "classnames";
 import getHeight from "dom-helpers/query/height";
-import qsa from "dom-helpers/query/querySelectorAll";
 import PropTypes from "prop-types";
 import React from "react";
 import { findDOMNode } from "react-dom";
@@ -70,7 +69,7 @@ class DateContentRow extends React.Component {
 
     handleShowMore = slot => {
         const { range, onShowMore } = this.props;
-        const row = qsa( findDOMNode( this ), css.rbcRowBg )[ 0 ];
+        const row = findDOMNode( this ).getElementsByClassName( css.rbcRowBg )[ 0 ];
 
         let cell;
         if ( row ) {
