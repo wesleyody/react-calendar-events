@@ -49,6 +49,8 @@ export default class TimeGrid extends Component {
             raf.cancel( this.rafHandle );
             this.rafHandle = raf( this.checkOverflow );
         } );
+        const timeIndicator = this.refs.timeIndicator;
+        timeIndicator.parentNode.scrollTop = timeIndicator.offsetTop;
     }
 
     componentWillUnmount () {
