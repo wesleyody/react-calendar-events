@@ -111,7 +111,6 @@ export default class TimeGrid extends Component {
                 const eStart = get( event, startAccessor );
                 const eEnd = get( event, endAccessor );
                 if ( get( event, allDayAccessor ) ||
-                    ( dates.isJustDate( eStart ) && dates.isJustDate( eEnd ) ) ||
                     ( !showMultiDayTimes && !dates.eq( eStart, eEnd, "day" ) )
                 ) {
                     allDayEvents.push( event );
