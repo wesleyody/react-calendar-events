@@ -49,8 +49,6 @@ export default class TimeGrid extends Component {
             raf.cancel( this.rafHandle );
             this.rafHandle = raf( this.checkOverflow );
         } );
-        const timeIndicator = this.refs.timeIndicator;
-        timeIndicator.parentNode.scrollTop = timeIndicator.offsetTop;
     }
 
     componentWillUnmount () {
@@ -62,17 +60,7 @@ export default class TimeGrid extends Component {
             this.measureGutter();
         }
 
-        this.applyScroll();
         this.positionTimeIndicator();
-    }
-
-    componentWillReceiveProps ( nextProps ) {
-        const { range, scrollToTime } = this.props;
-        // When paginating, reset scroll
-        if ( !dates.eq( nextProps.range[ 0 ], range[ 0 ], "minute" ) ||
-            !dates.eq( nextProps.scrollToTime, scrollToTime, "minute" ) ) {
-            this.calculateScroll( nextProps );
-        }
     }
 
     handleSelectAllDaySlot = ( slots, slotInfo ) => {
@@ -399,17 +387,16 @@ export default class TimeGrid extends Component {
     };
 
     positionTimeIndicator () {
-        const { rtl, min, max, getNow } = this.props;
+        const { rtl, min, max, getNow, range } = this.props;
         const current = getNow();
 
-        const secondsGrid = dates.diff( max, min, "seconds" );
-        const secondsPassed = dates.diff( current, min, "seconds" );
-
         const timeIndicator = this.refs.timeIndicator;
-        const factor = secondsPassed / secondsGrid;
         const timeGutter = this._gutters[ this._gutters.length - 1 ];
 
-        if ( timeGutter && current >= min && current <= max ) {
+        if ( timeGutter && dates.eq( current, range, "day" ) ) {
+            const secondsGrid = dates.diff( max, min, "seconds" );
+            const secondsPassed = dates.diff( current, min, "seconds" );
+            const factor = secondsPassed / secondsGrid;
             const pixelHeight = timeGutter.offsetHeight;
             const offset = Math.floor( factor * pixelHeight );
 
@@ -483,7 +470,7 @@ TimeGrid.defaultProps = {
     step: 30,
     min: dates.startOf( new Date(), "day" ),
     max: dates.endOf( new Date(), "day" ),
-    scrollToTime: dates.startOf( new Date(), "day" ),
+    scrollToTime: new Date(),
     /* this is needed to satisfy requirements from TimeColumn required props
      * There is a strange bug in React, using ...TimeColumn.defaultProps causes weird crashes
      */
