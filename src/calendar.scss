@@ -566,8 +566,10 @@ button.rbcInput::-moz-focus-inner {
 
 .rbcEventContent {
     overflow: hidden;
-    text-overflow: ellipsis;
     white-space: nowrap;
+    display: table;
+    table-layout: fixed;
+    width: 100%;
 }
 
 .rbcEventHour {
