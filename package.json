@@ -55,7 +55,7 @@
     "babel-preset-react": "^6.24.1",
     "cpx": "^1.5.0",
     "css-loader": "^0.28.10",
-    "eslint": "^3.0.0",
+    "eslint": "^4.18.2",
     "eslint-plugin-react": "^6.8.0",
     "extract-text-webpack-plugin": "^1.0.1",
     "lint-staged": "^6.0.0",
