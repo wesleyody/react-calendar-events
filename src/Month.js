@@ -88,10 +88,6 @@ class MonthView extends React.Component {
         };
     }
 
-    static getDerivedStateFromProps ( nextProps ) {
-        return { needLimitMeasure: !dates.eq( nextProps.date, this.props.date ) };
-    }
-
     componentDidMount () {
         this.measureRowLimit( this.props );
 
