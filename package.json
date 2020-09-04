@@ -38,8 +38,8 @@
     ]
   },
   "peerDependencies": {
-    "react": "^15.3.0 || ^16.0.0",
-    "react-dom": "^15.3.0 || ^16.0.0"
+    "react": "^16.13.0",
+    "react-dom": "^16.13.0"
   },
   "devDependencies": {
     "babel-cli": "^6.7.5",
@@ -59,7 +59,7 @@
     "eslint-plugin-react": "^6.8.0",
     "extract-text-webpack-plugin": "^1.0.1",
     "lint-staged": "^6.0.0",
-    "node-sass": "^3.13.0",
+    "node-sass": "^4.14.1",
     "react": "^15.4.1",
     "react-dnd": "^2.1.4",
     "react-dnd-html5-backend": "^2.1.2",
