@@ -27,9 +27,7 @@ export default class TimeGrid extends Component {
         this.handleSelectEvent = this.handleSelectEvent.bind( this );
         this.handleDoubleClickEvent = this.handleDoubleClickEvent.bind( this );
         this.handleHeaderClick = this.handleHeaderClick.bind( this );
-    }
 
-    componentWillMount () {
         this._gutters = [];
         this.calculateScroll();
     }
