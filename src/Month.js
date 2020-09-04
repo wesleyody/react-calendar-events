@@ -88,6 +88,10 @@ class MonthView extends React.Component {
         };
     }
 
+    static getDerivedStateFromProps ( nextProps ) {
+        return { needLimitMeasure: !dates.eq( nextProps.date, this.props.date ) };
+    }
+
     componentDidMount () {
         this.measureRowLimit( this.props );
 
@@ -106,14 +110,9 @@ class MonthView extends React.Component {
         );
     }
 
-    componentDidUpdate ( prevProps ) {
-        if ( prevProps !== this.props ) {
-            if ( this.state.needLimitMeasure ) {
-                this.measureRowLimit( this.props );
-            }
-            this.setState( {
-                needLimitMeasure: !dates.eq( prevProps.date, this.props.date )
-            } );
+    componentDidUpdate () {
+        if ( this.state.needLimitMeasure ) {
+            this.measureRowLimit( this.props );
         }
     }
 
