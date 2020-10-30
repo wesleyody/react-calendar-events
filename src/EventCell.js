@@ -82,10 +82,10 @@ class EventCell extends React.Component {
                     onDoubleClick={ e => onDoubleClick( event, e )}
                 >
                     {
-                        isAllDayEvent ?
-                            <span title={ tooltip }>{ title }</span> :
-                            Event ?
-                                <Event event={ event } title={ title } isAllDay={ isAllDayEvent }/> :
+                        Event ?
+                            <Event event={ event } title={ title } isAllDay={ isAllDayEvent }/> :
+                            isAllDayEvent ?
+                                <span title={ tooltip }>{ title }</span> :
                                 <div className={ css.rbcEventContent } title={ tooltip }>
                                     <div className={ css.rbcEventHour } style={ styleEvent }></div>
                                     { moment( event.start ).format( "HH:mm" ) + " " + title }
