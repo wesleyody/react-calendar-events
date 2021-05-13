@@ -7,23 +7,25 @@ function inSame12Hr ( start, end ) {
 }
 
 const dateRangeFormat = ( { start, end }, culture, local ) =>
-local.format( start, "d", culture ) + " — " + local.format( end, "d", culture );
+    local.format( start, "d", culture ) + " — " + local.format( end, "d", culture );
 
 const timeRangeFormat = ( { start, end }, culture, local ) =>
-local.format( start, "h:mmtt", culture ) +
-" — " +
-local.format( end, inSame12Hr( start, end ) ? "h:mm" : "h:mmtt", culture );
+    local.format( start, "h:mmtt", culture ) +
+    " — " +
+    local.format( end, inSame12Hr( start, end ) ? "h:mm" : "h:mmtt", culture );
 
+/* eslint-disable no-unused-vars */
 const timeRangeStartFormat = ( { start, end }, culture, local ) =>
-local.format( start, "h:mmtt", culture ) + " — ";
+    local.format( start, "h:mmtt", culture ) + " — ";
 
+/* eslint-disable no-unused-vars */
 const timeRangeEndFormat = ( { start, end }, culture, local ) =>
-" — " + local.format( end, "h:mmtt", culture );
+    " — " + local.format( end, "h:mmtt", culture );
 
 const weekRangeFormat = ( { start, end }, culture, local ) =>
-local.format( start, "MMM dd", culture ) +
-" - " +
-local.format( end, dates.eq( start, end, "month" ) ? "dd" : "MMM dd", culture );
+    local.format( start, "MMM dd", culture ) +
+    " - " +
+    local.format( end, dates.eq( start, end, "month" ) ? "dd" : "MMM dd", culture );
 
 const formats = {
     dateFormat: "dd",

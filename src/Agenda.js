@@ -38,15 +38,15 @@ class Agenda extends React.Component {
             <div className={ css.rbcAgendaView }>
                 <table ref="header">
                     <thead>
-                    <tr>
-                        <th className={ css.rbcHeader } ref="dateCol">
-                            { messages.date }
-                        </th>
-                        <th className={ css.rbcHeader } ref="timeCol">
-                            { messages.time }
-                        </th>
-                        <th className={ css.rbcHeader }>{ messages.event }</th>
-                    </tr>
+                        <tr>
+                            <th className={ css.rbcHeader } ref="dateCol">
+                                { messages.date }
+                            </th>
+                            <th className={ css.rbcHeader } ref="timeCol">
+                                { messages.time }
+                            </th>
+                            <th className={ css.rbcHeader }>{ messages.event }</th>
+                        </tr>
                     </thead>
                 </table>
                 <div className={ css.rbcAgendaContent } ref="content">
@@ -80,11 +80,11 @@ class Agenda extends React.Component {
         return events.map( ( event, idx ) => {
             const { className, style } = eventPropGetter
                 ? eventPropGetter(
-                event,
-                get( event, startAccessor ),
-                get( event, endAccessor ),
-                isSelected( event, selected )
-            )
+                    event,
+                    get( event, startAccessor ),
+                    get( event, endAccessor ),
+                    isSelected( event, selected )
+                )
                 : {};
             const dateLabel =
                 idx === 0 && localizer.format( day, agendaDateFormat, culture );
