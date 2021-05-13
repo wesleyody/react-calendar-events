@@ -1,6 +1,6 @@
 {
   "name": "react-calendar-events",
-  "version": "0.0.22",
+  "version": "1.0.0-beta.2",
   "description": "React calendar for displaying events",
   "author": "Wesley <wesleyody@gmail.com>",
   "repository": {
