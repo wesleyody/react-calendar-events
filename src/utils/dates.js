@@ -1,5 +1,4 @@
-/* eslint no-fallthrough: off */
-import dateMath from "date-arithmetic";
+import * as dateMath from "date-arithmetic";
 
 import localizer from "../localizer";
 
