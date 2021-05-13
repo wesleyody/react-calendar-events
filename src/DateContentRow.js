@@ -1,5 +1,5 @@
 import cn from "classnames";
-import getHeight from "dom-helpers/query/height";
+import getHeight from "dom-helpers/height";
 import PropTypes from "prop-types";
 import React from "react";
 import { findDOMNode } from "react-dom";

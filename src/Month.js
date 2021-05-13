@@ -2,8 +2,8 @@ import PropTypes from "prop-types";
 import React from "react";
 import Overlay from "react-overlays/lib/Overlay";
 import { findDOMNode } from "react-dom";
-import getPosition from "dom-helpers/query/position";
-import raf from "dom-helpers/util/requestAnimationFrame";
+import getPosition from "dom-helpers/position";
+import raf from "dom-helpers/animationFrame";
 import chunk from "lodash/chunk";
 import cn from "classnames";
 
@@ -96,7 +96,7 @@ class MonthView extends React.Component {
             "resize",
             ( this._resizeListener = () => {
                 if ( !running ) {
-                    raf( () => {
+                    raf.request( () => {
                         running = false;
                         this.setState( { needLimitMeasure: true } ) ;
                     } );

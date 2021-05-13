@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import { findDOMNode } from "react-dom";
-import getHeight from "dom-helpers/query/height";
+import getHeight from "dom-helpers/height";
 
 import EventCell from "./EventCell";
 import { accessor, elementType } from "./utils/propTypes";

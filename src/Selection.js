@@ -1,17 +1,11 @@
-import contains from "dom-helpers/query/contains";
-import closest from "dom-helpers/query/closest";
-import events from "dom-helpers/events";
+import contains from "dom-helpers/contains";
+import closest from "dom-helpers/closest";
+import listen from "dom-helpers/listen";
 
 import css from "./calendar.scss";
 
 function addEventListener ( type, handler, target = document ) {
-    events.on( target, type, handler );
-
-    return {
-        remove () {
-            events.off( target, type, handler );
-        }
-    };
+    return listen( target, type, handler, { passive: false } );
 }
 
 function isOverContainer ( container, x, y ) {

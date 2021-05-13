@@ -1,10 +1,10 @@
 import PropTypes from "prop-types";
 import cn from "classnames";
-import raf from "dom-helpers/util/requestAnimationFrame";
+import raf from "dom-helpers/animationFrame";
 import { Component } from "react";
 import { findDOMNode } from "react-dom";
-import getWidth from "dom-helpers/query/width";
-import scrollbarSize from "dom-helpers/util/scrollbarSize";
+import getWidth from "dom-helpers/width";
+import scrollbarSize from "dom-helpers/scrollbarSize";
 
 import dates from "./utils/dates";
 import localizer from "./localizer";
@@ -45,7 +45,7 @@ export default class TimeGrid extends Component {
 
         window.addEventListener( "resize", () => {
             raf.cancel( this.rafHandle );
-            this.rafHandle = raf( this.checkOverflow );
+            this.rafHandle = raf.request( this.checkOverflow );
         } );
     }
 

@@ -1,8 +1,9 @@
 import PropTypes from "prop-types";
 import React from "react";
-import classes from "dom-helpers/class";
-import getWidth from "dom-helpers/query/width";
-import scrollbarSize from "dom-helpers/util/scrollbarSize";
+import addClass from "dom-helpers/addClass";
+import removeClass from "dom-helpers/removeClass";
+import getWidth from "dom-helpers/width";
+import scrollbarSize from "dom-helpers/scrollbarSize";
 import classnames from "classnames";
 
 import localizer from "./localizer";
@@ -174,10 +175,10 @@ class Agenda extends React.Component {
         }
 
         if ( isOverflowing ) {
-            classes.addClass( header, css.rbcHeaderOverflowing );
+            addClass( header, css.rbcHeaderOverflowing );
             header.style.marginRight = scrollbarSize() + "px";
         } else {
-            classes.removeClass( header, css.rbcHeaderOverflowing );
+            removeClass( header, css.rbcHeaderOverflowing );
         }
     }
 
