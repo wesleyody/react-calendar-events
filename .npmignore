@@ -1,0 +1,7 @@
+lib/
+node_modules/
+.github/
+.babelrc
+.eslintrc.yml
+package-lock.json
+webpack.config.js
