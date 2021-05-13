@@ -67,7 +67,7 @@
   "dependencies": {
     "classnames": "^2.3.1",
     "date-arithmetic": "^3.0.0",
-    "dom-helpers": "^2.3.0 || ^3.0.0",
+    "dom-helpers": "^5.2.1",
     "invariant": "^2.1.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
