@@ -38,44 +38,42 @@
     ]
   },
   "peerDependencies": {
-    "react": "^16.13.0",
-    "react-dom": "^16.13.0"
+    "react": "16.x",
+    "react-dom": "16.x"
   },
   "devDependencies": {
-    "babel-cli": "^6.7.5",
-    "babel-core": "^6.7.6",
-    "babel-eslint": "^6.0.2",
-    "babel-loader": "^6.2.8",
-    "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-plugin-transform-react-jsx": "^6.8.0",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-latest": "~6.16.0",
-    "babel-preset-react": "^6.24.1",
+    "@babel/cli": "^7.13.16",
+    "@babel/core": "^7.14.2",
+    "@babel/plugin-proposal-class-properties": "^7.13.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.14.2",
+    "@babel/plugin-transform-modules-commonjs": "^7.14.0",
+    "@babel/plugin-transform-react-jsx": "^7.13.12",
+    "@babel/preset-env": "^7.14.2",
+    "babel-eslint": "^10.1.0",
+    "babel-loader": "^8.2.2",
     "cpx": "^1.5.0",
-    "css-loader": "^0.28.10",
-    "eslint": "^3.0.0",
-    "eslint-plugin-react": "^6.8.0",
-    "extract-text-webpack-plugin": "^1.0.1",
-    "lint-staged": "^6.0.0",
+    "css-loader": "^5.2.4",
+    "eslint": "^7.26.0",
+    "eslint-plugin-react": "^7.23.2",
+    "lint-staged": "^11.0.0",
+    "mini-css-extract-plugin": "^1.6.0",
     "node-sass": "^4.14.1",
     "react-dnd": "^2.1.4",
     "react-dnd-html5-backend": "^2.1.2",
     "release-script": "^1.0.0",
-    "sass-loader": "^6.0.7",
-    "webpack": "^1.13.3"
+    "sass-loader": "^11.1.0",
+    "webpack": "^5.37.0"
   },
   "dependencies": {
-    "classnames": "^2.1.3",
-    "date-arithmetic": "^3.0.0",
-    "dom-helpers": "^2.3.0 || ^3.0.0",
+    "classnames": "^2.3.1",
+    "date-arithmetic": "^4.1.0",
+    "dom-helpers": "^5.2.1",
     "invariant": "^2.1.0",
-    "lodash": "^4.17.4",
-    "moment": "^2.21.0",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.1",
     "prop-types": "^15.5.8",
     "react-overlays": "^0.7.0",
     "react-prop-types": "^0.4.0",
-    "uncontrollable": "^4.0.0"
+    "uncontrollable": "^7.2.1"
   }
 }

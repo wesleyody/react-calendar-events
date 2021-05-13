@@ -3,21 +3,23 @@ import { set } from "../formats";
 import { set as setLocalizer } from "../localizer";
 
 const dateRangeFormat = ( { start, end }, culture, local ) =>
-local.format( start, "L", culture ) + " — " + local.format( end, "L", culture );
+    local.format( start, "L", culture ) + " — " + local.format( end, "L", culture );
 
 const timeRangeFormat = ( { start, end }, culture, local ) =>
-local.format( start, "LT", culture ) + " — " + local.format( end, "LT", culture );
+    local.format( start, "LT", culture ) + " — " + local.format( end, "LT", culture );
 
+/* eslint-disable no-unused-vars */
 const timeRangeStartFormat = ( { start, end }, culture, local ) =>
-local.format( start, "h:mma", culture ) + " — ";
+    local.format( start, "h:mma", culture ) + " — ";
 
+/* eslint-disable no-unused-vars */
 const timeRangeEndFormat = ( { start, end }, culture, local ) =>
-" — " + local.format( end, "h:mma", culture );
+    " — " + local.format( end, "h:mma", culture );
 
 const weekRangeFormat = ( { start, end }, culture, local ) =>
-local.format( start, "MMM DD", culture ) +
-" - " +
-local.format( end, dates.eq( start, end, "month" ) ? "DD" : "MMM DD", culture );
+    local.format( start, "MMM DD", culture ) +
+    " - " +
+    local.format( end, dates.eq( start, end, "month" ) ? "DD" : "MMM DD", culture );
 
 export const formats = {
     dateFormat: "DD",

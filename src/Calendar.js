@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
-import uncontrollable from "uncontrollable";
+import { uncontrollable } from "uncontrollable";
 import omit from "lodash/omit";
 import defaults from "lodash/defaults";
 import transform from "lodash/transform";

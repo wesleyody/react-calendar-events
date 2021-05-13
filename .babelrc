@@ -1,9 +1,8 @@
 {
-    "presets": [ "latest", "react" ],
     "plugins": [
-        "transform-react-jsx",
-        "transform-es2015-modules-commonjs",
-        "transform-class-properties",
-        "transform-object-rest-spread"
+        "@babel/plugin-transform-react-jsx",
+        "@babel/plugin-transform-modules-commonjs",
+        "@babel/plugin-proposal-class-properties",
+        "@babel/plugin-proposal-object-rest-spread"
     ]
 }

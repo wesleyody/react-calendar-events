@@ -1,5 +1,5 @@
 const readFileSync = require( "fs" ).readFileSync;
-const ExtractTextPlugin = require( "extract-text-webpack-plugin" );
+const MiniCssExtractPlugin = require( "mini-css-extract-plugin" );
 
 module.exports = {
     entry: {
@@ -14,19 +14,20 @@ module.exports = {
                 test: /\.js$/,
                 exclude: /(node_modules|bower_components)/,
                 loader: "babel",
-                query: Object.assign( JSON.parse( readFileSync( ".babelrc" ) ), {
-                    presets: [ "es2015" ]
+                options: Object.assign( JSON.parse( readFileSync( ".babelrc" ) ), {
+                    presets: [ "@babel/preset-env" ]
                 })
             },
             {
-                test: /\.scss$/,
-                loader: ExtractTextPlugin.extract( "css!sass" )
+                test: /\.s?css$/,
+                loader: MiniCssExtractPlugin.loader
             }
         ]
     },
     plugins: [
-        new ExtractTextPlugin( "lib/calendar.css", {
-            allChunks: true
+        new MiniCssExtractPlugin({
+            filename: "lib/calendar.css",
+            allChunks: "[id].css"
         })
     ]
 };
