@@ -71,7 +71,7 @@
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "prop-types": "^15.5.8",
-    "react-overlays": "^0.7.0",
+    "react-overlays": "^5.1.1",
     "react-prop-types": "^0.4.0",
     "uncontrollable": "^7.2.1"
   }
