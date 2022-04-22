@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
-import Overlay from "react-overlays/lib/Overlay";
+import Overlay from "react-overlays/Overlay";
 import { findDOMNode } from "react-dom";
 import getPosition from "dom-helpers/position";
 import raf from "dom-helpers/animationFrame";
