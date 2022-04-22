@@ -53,17 +53,17 @@
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.2.5",
     "cpx": "^1.5.0",
-    "css-loader": "^5.2.4",
+    "css-loader": "^6.7.1",
     "eslint": "^7.26.0",
     "eslint-plugin-react": "^7.23.2",
     "lint-staged": "^11.0.0",
-    "mini-css-extract-plugin": "^1.6.0",
-    "node-sass": "^4.14.1",
+    "mini-css-extract-plugin": "^2.6.0",
+    "node-sass": "^6.0.1",
     "react-dnd": "^2.1.4",
     "react-dnd-html5-backend": "^2.1.2",
     "release-script": "^1.0.0",
     "sass-loader": "^11.1.0",
-    "webpack": "^5.37.0"
+    "webpack": "^5.72.0"
   },
   "dependencies": {
     "classnames": "^2.3.1",
