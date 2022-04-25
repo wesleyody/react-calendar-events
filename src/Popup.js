@@ -28,8 +28,8 @@ const propTypes = {
 class Popup extends React.Component {
 
     componentDidMount () {
-        const { popupOffset = 5 } = this.props;
-        const { top, left, width, height } = getOffset( this.refs.root );
+        const { popperRef, popupOffset = 5 } = this.props;
+        const { top, left, width, height } = getOffset( popperRef.current );
         const viewBottom = window.innerHeight + getScrollTop( window );
         const viewRight = window.innerWidth + getScrollLeft( window );
         const bottom = top + height;
@@ -56,6 +56,7 @@ class Popup extends React.Component {
             selected,
             eventComponent,
             eventWrapperComponent,
+            popperRef,
             ...props
         } = this.props;
 
@@ -70,7 +71,7 @@ class Popup extends React.Component {
         };
 
         return (
-            <div ref="root" style={ style } className={ css.rbcOverlay }>
+            <div ref={ popperRef } style={ style } className={ css.rbcOverlay }>
                 <div className={ css.rbcOverlayHeader }>
                     { localizer.format(
                         props.slotStart,
@@ -96,4 +97,10 @@ class Popup extends React.Component {
 
 Popup.propTypes = propTypes;
 
-export default Popup;
+/**
+ * The Overlay component, of react-overlays, creates a ref that is passed to the Popup, and
+ * requires proper ref forwarding to be used without error
+ */
+export default React.forwardRef((props, ref) => (
+    <Popup popperRef={ref} {...props} />
+));

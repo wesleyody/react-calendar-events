@@ -5,6 +5,7 @@ import { findDOMNode } from "react-dom";
 import getPosition from "dom-helpers/position";
 import raf from "dom-helpers/animationFrame";
 import chunk from "lodash/chunk";
+import omit from "lodash/omit";
 import cn from "classnames";
 
 import dates from "./utils/dates";
@@ -80,7 +81,7 @@ class MonthView extends React.Component {
     constructor ( ...args ) {
         super( ...args );
 
-        this._bgRows = [];
+        this.monthView = React.createRef();
         this._pendingSelection = [];
         this.state = {
             rowLimit: 5,
@@ -128,7 +129,7 @@ class MonthView extends React.Component {
         this._weekCount = weeks.length;
 
         return (
-            <div className={ cn( css.rbcMonthView, className )}>
+            <div ref={ this.monthView } className={ cn( css.rbcMonthView, className )}>
                 <div className={ cn( css.rbcRow, css.rbcMonthHeader )}>
                     { this.renderHeaders( weeks[ 0 ], weekdayFormat, culture ) }
                 </div>
@@ -256,21 +257,28 @@ class MonthView extends React.Component {
             <Overlay
                 rootClose
                 placement="bottom"
-                container={ this }
+                container={ this.monthView }
                 show={ !!overlay.position }
                 onHide={ () => this.setState( { overlay: null } ) }
+                target={ () => overlay.target }
             >
-                <Popup
-                    { ...this.props }
-                    eventComponent={ components.event }
-                    eventWrapperComponent={ components.eventWrapper }
-                    position={ overlay.position }
-                    events={ overlay.events }
-                    slotStart={ overlay.date }
-                    slotEnd={ overlay.end }
-                    onSelect={ this.handleSelectEvent }
-                    onDoubleClick={ this.handleDoubleClickEvent }
-                />
+                {
+                    ({ props }) => (
+                        <Popup
+                            { ...omit( props, "style" ) }
+                            { ...this.props }
+                            eventComponent={ components.event }
+                            eventWrapperComponent={ components.eventWrapper }
+                            position={ overlay.position }
+                            events={ overlay.events }
+                            slotStart={ overlay.date }
+                            slotEnd={ overlay.end }
+                            onSelect={ this.handleSelectEvent }
+                            onDoubleClick={ this.handleDoubleClickEvent }
+                        />
+                    )
+                }
+
             </Overlay>
         );
     }
@@ -305,7 +313,7 @@ class MonthView extends React.Component {
         notify( this.props.onDoubleClickEvent, args );
     };
 
-    handleShowMore = ( events, date, cell, slot ) => {
+    handleShowMore = ( events, date, cell, slot, target ) => {
         const { popup, onDrillDown, onShowMore, getDrilldownView } = this.props;
         //cancel any pending selections so only the event click goes through.
         this.clearSelection();
@@ -314,7 +322,7 @@ class MonthView extends React.Component {
             const position = getPosition( cell, findDOMNode( this ) );
 
             this.setState( {
-                overlay: { date, events, position },
+                overlay: { date, events, position, target },
             } );
         } else {
             notify( onDrillDown, [ date, getDrilldownView( date ) || views.DAY ] );

@@ -67,7 +67,7 @@ class DateContentRow extends React.Component {
         onSelectSlot( range.slice( slot.start, slot.end + 1 ), slot );
     };
 
-    handleShowMore = slot => {
+    handleShowMore = ( slot, target ) => {
         const { range, onShowMore } = this.props;
         const row = findDOMNode( this ).getElementsByClassName( css.rbcRowBg )[ 0 ];
 
@@ -80,7 +80,7 @@ class DateContentRow extends React.Component {
             .filter( seg => isSegmentInSlot( seg, slot ) )
             .map( seg => seg.event );
 
-        onShowMore( events, range[ slot - 1 ], cell, slot );
+        onShowMore( events, range[ slot - 1 ], cell, slot, target );
     };
 
     createHeadingRef = r => {
