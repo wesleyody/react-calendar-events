@@ -27,7 +27,7 @@ module.exports = {
     plugins: [
         new MiniCssExtractPlugin({
             filename: "lib/calendar.css",
-            allChunks: "[id].css"
+            chunkFilename: "[id].css"
         })
     ]
 };

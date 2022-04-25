@@ -43,27 +43,25 @@
     "react-dom": "16.x"
   },
   "devDependencies": {
-    "@babel/cli": "^7.13.16",
-    "@babel/core": "^7.14.2",
-    "@babel/plugin-proposal-class-properties": "^7.13.0",
-    "@babel/plugin-proposal-object-rest-spread": "^7.14.2",
-    "@babel/plugin-transform-modules-commonjs": "^7.14.0",
-    "@babel/plugin-transform-react-jsx": "^7.13.12",
-    "@babel/preset-env": "^7.14.2",
+    "@babel/cli": "^7.17.6",
+    "@babel/core": "^7.17.9",
+    "@babel/plugin-proposal-class-properties": "^7.16.7",
+    "@babel/plugin-proposal-object-rest-spread": "^7.17.3",
+    "@babel/plugin-transform-modules-commonjs": "^7.17.9",
+    "@babel/plugin-transform-react-jsx": "^7.17.3",
+    "@babel/preset-env": "^7.16.11",
     "babel-eslint": "^10.1.0",
-    "babel-loader": "^8.2.2",
+    "babel-loader": "^8.2.5",
     "cpx": "^1.5.0",
-    "css-loader": "^5.2.4",
+    "css-loader": "^6.7.1",
     "eslint": "^7.26.0",
     "eslint-plugin-react": "^7.23.2",
     "lint-staged": "^11.0.0",
-    "mini-css-extract-plugin": "^1.6.0",
-    "node-sass": "^4.14.1",
-    "react-dnd": "^2.1.4",
-    "react-dnd-html5-backend": "^2.1.2",
+    "mini-css-extract-plugin": "^2.6.0",
+    "node-sass": "^6.0.1",
     "release-script": "^1.0.0",
     "sass-loader": "^11.1.0",
-    "webpack": "^5.37.0"
+    "webpack": "^5.72.0"
   },
   "dependencies": {
     "classnames": "^2.3.1",
@@ -73,7 +71,7 @@
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "prop-types": "^15.5.8",
-    "react-overlays": "^0.7.0",
+    "react-overlays": "^5.1.1",
     "react-prop-types": "^0.4.0",
     "uncontrollable": "^7.2.1"
   }
