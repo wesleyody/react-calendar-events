@@ -64,7 +64,7 @@
     "webpack": "^5.72.0"
   },
   "dependencies": {
-    "classnames": "^2.3.1",
+    "classnames": "^2.3.2",
     "date-arithmetic": "^4.1.0",
     "dom-helpers": "^5.2.1",
     "invariant": "^2.1.0",
