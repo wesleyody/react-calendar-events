@@ -49,6 +49,7 @@ class DayColumn extends React.Component {
 
     render () {
         const {
+            adapter,
             getNow,
             min,
             max,
@@ -73,6 +74,7 @@ class DayColumn extends React.Component {
         return (
             <TimeColumn
                 { ...props }
+                adapter={ adapter }
                 className={ cn(
                     css.rbcDaySlot,
                     className
@@ -88,7 +90,7 @@ class DayColumn extends React.Component {
                 </div>
                 { selecting && (
                     <div className={ css.rbcSlotSelection } style={ slotStyle }>
-                        <span>{ localizer.format( selectDates, selectRangeFormat, culture )}</span>
+                        <span>{ localizer.format( adapter, selectDates, selectRangeFormat, culture )}</span>
                     </div>
                 )}
             </TimeColumn>
@@ -97,6 +99,7 @@ class DayColumn extends React.Component {
 
     renderEvents = () => {
         const {
+            adapter,
             components: { event: EventComponent },
             culture,
             endAccessor,
@@ -158,7 +161,7 @@ class DayColumn extends React.Component {
             if ( _continuesPrior && _continuesAfter ) {
                 label = messages.allDay;
             } else {
-                label = localizer.format( { start, end }, _eventTimeRangeFormat, culture );
+                label = localizer.format( adapter, { start, end }, _eventTimeRangeFormat, culture );
             }
 
             const _isSelected = isSelected( event, selected );

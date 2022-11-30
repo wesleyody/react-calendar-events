@@ -40,6 +40,7 @@ export default class TimeSlotGroup extends Component {
         let sliceValue = this.props.value;
         for ( let i = 0; i < this.props.timeslots; i++ ) {
             const content = localizer.format(
+                this.props.adapter,
                 sliceValue,
                 this.props.timeGutterFormat,
                 this.props.culture

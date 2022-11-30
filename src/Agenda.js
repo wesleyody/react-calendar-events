@@ -114,6 +114,7 @@ class Agenda extends React.Component {
 
     timeRangeLabel = ( day, event ) => {
         const {
+            adapter,
             endAccessor,
             startAccessor,
             allDayAccessor,
@@ -131,11 +132,11 @@ class Agenda extends React.Component {
 
         if ( !get( event, allDayAccessor ) ) {
             if ( dates.eq( start, end, "day" ) ) {
-                label = localizer.format( { start, end }, this.props.agendaTimeRangeFormat, culture );
+                label = localizer.format( adapter, { start, end }, this.props.agendaTimeRangeFormat, culture );
             } else if ( dates.eq( day, start, "day" ) ) {
-                label = localizer.format( start, this.props.agendaTimeFormat, culture );
+                label = localizer.format( adapter, start, this.props.agendaTimeFormat, culture );
             } else if ( dates.eq( day, end, "day" ) ) {
-                label = localizer.format( end, this.props.agendaTimeFormat, culture );
+                label = localizer.format( adapter, end, this.props.agendaTimeFormat, culture );
             }
         }
 
@@ -197,14 +198,14 @@ Agenda.navigate = ( date, action, { length = Agenda.defaultProps.length } ) => {
     }
 };
 
-Agenda.title = ( start, { length = Agenda.defaultProps.length, formats, culture } ) => {
+Agenda.title = ( adapter, start, { length = Agenda.defaultProps.length, formats, culture } ) => {
     const end = dates.add( start, length, "day" );
-    return localizer.format( { start, end }, formats.agendaHeaderFormat, culture );
+    return localizer.format( adapter, { start, end }, formats.agendaHeaderFormat, culture );
 };
 
-Agenda.title = ( start, { length = ( length = Agenda.defaultProps.length ), formats, culture } ) => {
+Agenda.title = ( adapter, start, { length = ( length = Agenda.defaultProps.length ), formats, culture } ) => {
     const end = dates.add( start, length, "day" );
-    return localizer.format( { start, end }, formats.agendaHeaderFormat, culture );
+    return localizer.format( adapter, { start, end }, formats.agendaHeaderFormat, culture );
 };
 
 Agenda.propTypes = {

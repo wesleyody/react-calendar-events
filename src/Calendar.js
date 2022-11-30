@@ -97,6 +97,7 @@ class Calendar extends React.Component {
 
     render () {
         const {
+            adapter: Adapter,
             view,
             toolbar,
             events,
@@ -116,6 +117,7 @@ class Calendar extends React.Component {
         formats = defaultFormats( formats );
         messages = message( messages );
 
+        const adapterInstance = new Adapter( culture );
         const View = this.getView();
         const names = viewNames( this.props.views );
 
@@ -153,6 +155,7 @@ class Calendar extends React.Component {
                     ref="view"
                     { ...props }
                     { ...formats }
+                    adapter={ adapterInstance }
                     messages={ messages }
                     culture={ culture }
                     formats={ undefined }
@@ -222,6 +225,11 @@ class Calendar extends React.Component {
 }
 
 Calendar.propTypes = {
+    /**
+     * @date-io instance
+     *
+     */
+    adapter: PropTypes.any.isRequired,
     /**
      * Props passed to main calendar `<div>`.
      *

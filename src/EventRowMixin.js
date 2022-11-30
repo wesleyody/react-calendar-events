@@ -11,6 +11,7 @@ import css from "./calendar.scss";
 /* eslint-disable react/prop-types */
 export default {
     propTypes: {
+        adapter: PropTypes.object.isRequired,
         slots: PropTypes.number.isRequired,
         end: PropTypes.instanceOf( Date ),
         start: PropTypes.instanceOf( Date ),

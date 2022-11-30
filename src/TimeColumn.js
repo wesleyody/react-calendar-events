@@ -12,6 +12,7 @@ export default class TimeColumn extends Component {
 
     renderTimeSliceGroup ( key, isNow, date, resource ) {
         const {
+            adapter,
             dayWrapperComponent,
             timeslots,
             showLabels,
@@ -25,6 +26,7 @@ export default class TimeColumn extends Component {
         return (
             <TimeSlotGroup
                 key={ key }
+                adapter={ adapter }
                 isNow={ isNow }
                 value={ date }
                 step={ step }

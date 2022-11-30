@@ -35,7 +35,9 @@ Day.navigate = ( date, action ) => {
     }
 };
 
-Day.title = ( date, { formats, culture } ) => localizer.format( date, formats.dayHeaderFormat, culture );
+Day.title = ( adapter, date, { formats, culture } ) => (
+    localizer.format( adapter, date, formats.dayHeaderFormat, culture )
+);
 
 Day.propTypes = {
     date: PropTypes.instanceOf( Date ).isRequired

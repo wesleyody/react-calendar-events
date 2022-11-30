@@ -43,23 +43,17 @@ export const formats = {
     agendaTimeRangeFormat: timeRangeFormat,
 };
 
-export default function ( moment ) {
-    const locale = ( m, c ) => ( c ? m.locale( c ) : m );
+export default function () {
 
     set( formats );
 
     return setLocalizer( {
-        firstOfWeek ( culture ) {
-            const data = culture ? moment.localeData( culture ) : moment.localeData();
-            return data ? data.firstDayOfWeek() : 0;
+        parse ( adapter, value, format ) {
+            return adapter.parse( value, format ).toDate();
         },
 
-        parse ( value, format, culture ) {
-            return locale( moment( value, format ), culture ).toDate();
-        },
-
-        format ( value, format, culture ) {
-            return locale( moment( value ), culture ).format( format );
+        format ( adapter, value, format ) {
+            return adapter.format( value, format );
         }
     } );
 }
