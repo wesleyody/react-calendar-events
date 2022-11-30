@@ -74,6 +74,7 @@ class Popup extends React.Component {
             <div ref={ popperRef } style={ style } className={ css.rbcOverlay }>
                 <div className={ css.rbcOverlayHeader }>
                     { localizer.format(
+                        props.adapter,
                         props.slotStart,
                         props.dayHeaderFormat,
                         props.culture

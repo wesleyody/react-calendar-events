@@ -1,7 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
 import cn from "classnames";
-import moment from "moment";
 
 import dates from "./utils/dates";
 import { accessor, elementType } from "./utils/propTypes";
@@ -9,6 +8,7 @@ import { accessor as get } from "./utils/accessors";
 import css from "./calendar.scss";
 
 const propTypes = {
+    adapter: PropTypes.object.isRequired,
     event: PropTypes.object.isRequired,
     slotStart: PropTypes.instanceOf( Date ),
     slotEnd: PropTypes.instanceOf( Date ),
@@ -32,6 +32,7 @@ class EventCell extends React.Component {
 
     render () {
         const {
+            adapter,
             className,
             event,
             selected,
@@ -88,7 +89,7 @@ class EventCell extends React.Component {
                                 <span title={ tooltip }>{ title }</span> :
                                 <div className={ css.rbcEventContent } title={ tooltip }>
                                     <div className={ css.rbcEventHour } style={ styleEvent }></div>
-                                    { moment( event.start ).format( "HH:mm" ) + " " + title }
+                                    { adapter.format( event.start, "HH:mm" ) + " " + title }
                                 </div>
                     }
                 </div>

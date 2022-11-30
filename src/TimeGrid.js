@@ -184,7 +184,7 @@ export default class TimeGrid extends Component {
     }
 
     renderHeader ( range, events, width, resources ) {
-        const { messages, rtl, selectable, components, getNow } = this.props;
+        const { adapter, messages, rtl, selectable, components, getNow } = this.props;
         const { isOverflowing } = this.state || {};
 
         const style = {};
@@ -221,6 +221,7 @@ export default class TimeGrid extends Component {
                         { message( messages ).allDay }
                     </div>
                     <DateContentRow
+                        adapter={ adapter }
                         getNow={ getNow }
                         minRows={ 2 }
                         range={ range }
@@ -418,6 +419,7 @@ export default class TimeGrid extends Component {
 };
 
 TimeGrid.propTypes = {
+    adapter: PropTypes.object.isRequired,
     events: PropTypes.array.isRequired,
     resources: PropTypes.array,
 

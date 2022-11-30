@@ -29,10 +29,9 @@ Week.navigate = ( date, action ) => {
     }
 };
 
-Week.range = ( date, { culture } ) => {
-    const firstOfWeek = localizer.startOfWeek( culture );
-    const start = dates.startOf( date, "week", firstOfWeek );
-    const end = dates.endOf( date, "week", firstOfWeek );
+Week.range = date => {
+    const start = dates.startOf( date, "week", 0 );
+    const end = dates.endOf( date, "week", 0 );
 
     return dates.range( start, end );
 };

@@ -1,7 +1,5 @@
 import * as dateMath from "date-arithmetic";
 
-import localizer from "../localizer";
-
 const MILLI = {
     seconds: 1000,
     minutes: 1000 * 60,
@@ -20,21 +18,21 @@ const dates = {
         return MONTHS.map( i => dates.month( date, i ) );
     },
 
-    firstVisibleDay ( date, culture ) {
+    firstVisibleDay ( date ) {
         const firstOfMonth = dates.startOf( date, "month" );
 
-        return dates.startOf( firstOfMonth, "week", localizer.startOfWeek( culture ) );
+        return dates.startOf( firstOfMonth, "week", 0 );
     },
 
-    lastVisibleDay ( date, culture ) {
+    lastVisibleDay ( date ) {
         const endOfMonth = dates.endOf( date, "month" );
 
-        return dates.endOf( endOfMonth, "week", localizer.startOfWeek( culture ) );
+        return dates.endOf( endOfMonth, "week", 0 );
     },
 
-    visibleDays ( date, culture ) {
-        let current = dates.firstVisibleDay( date, culture );
-        const last = dates.lastVisibleDay( date, culture );
+    visibleDays ( date ) {
+        let current = dates.firstVisibleDay( date );
+        const last = dates.lastVisibleDay( date );
         const days = [];
 
         while ( dates.lte( current, last, "day" ) ) {
@@ -99,13 +97,13 @@ const dates = {
         );
     },
 
-    duration ( start, end, unit, firstOfWeek ) {
+    duration ( start, end, unit ) {
         if ( unit === "day" ) {
             unit = "date";
         }
         return Math.abs(
-            dates[ unit ]( start, undefined, firstOfWeek ) -
-            dates[ unit ]( end, undefined, firstOfWeek )
+            dates[ unit ]( start, undefined, 0 ) -
+            dates[ unit ]( end, undefined, 0 )
         );
     },
 

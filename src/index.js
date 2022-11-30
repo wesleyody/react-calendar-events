@@ -1,16 +1,14 @@
-import moment from "moment";
-
 import Calendar from "./Calendar";
 import EventWrapper from "./EventWrapper";
 import BackgroundWrapper from "./BackgroundWrapper";
 import { set as setLocalizer } from "./localizer";
-import momentLocalizer from "./localizers/moment";
+import localizer from "./localizers";
 import move from "./utils/move";
 import { views, navigate } from "./utils/constants";
 
 Object.assign( Calendar, {
     setLocalizer,
-    momentLocalizer,
+    localizer,
     Views: views,
     Navigate: navigate,
     move,
@@ -21,6 +19,6 @@ Object.assign( Calendar, {
     }
 } );
 
-Calendar.setLocalizer( Calendar.momentLocalizer( moment ) );
+Calendar.setLocalizer( Calendar.localizer() );
 
 export default Calendar;

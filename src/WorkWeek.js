@@ -23,9 +23,10 @@ class WorkWeek extends React.Component {
 
 WorkWeek.navigate = Week.navigate;
 
-WorkWeek.title = ( date, { formats, culture } ) => {
+WorkWeek.title = ( adapter, date, { formats, culture } ) => {
     const [ start, ...rest ] = workWeekRange( date, { culture } );
     return localizer.format(
+        adapter,
         { start, end: rest.pop() },
         formats.dayRangeHeaderFormat,
         culture

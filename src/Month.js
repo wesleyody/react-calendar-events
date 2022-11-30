@@ -23,6 +23,7 @@ import css from "./calendar.scss";
 const eventsForWeek = ( evts, start, end, props ) => evts.filter( e => inRange( e, start, end, props ) );
 
 const propTypes = {
+    adapter: PropTypes.object.isRequired,
     events: PropTypes.array.isRequired,
     date: PropTypes.instanceOf( Date ),
 
@@ -141,6 +142,7 @@ class MonthView extends React.Component {
 
     renderWeek = ( week, weekIdx ) => {
         const {
+            adapter,
             components,
             selectable,
             titleAccessor,
@@ -166,6 +168,7 @@ class MonthView extends React.Component {
             <DateContentRow
                 key={ weekIdx }
                 ref={ weekIdx === 0 ? "slotRow" : undefined }
+                adapter={ adapter }
                 container={ this.getContainer }
                 className={ css.rbcMonthRow }
                 getNow={ getNow }

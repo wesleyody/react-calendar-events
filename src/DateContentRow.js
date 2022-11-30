@@ -20,6 +20,7 @@ import css from "./calendar.scss";
 const isSegmentInSlot = ( seg, slot ) => seg.left <= slot && seg.right >= slot;
 
 const propTypes = {
+    adapter: PropTypes.object.isRequired,
     date: PropTypes.instanceOf( Date ),
     events: PropTypes.array.isRequired,
     range: PropTypes.array.isRequired,
