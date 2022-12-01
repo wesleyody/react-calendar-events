@@ -117,7 +117,7 @@ class Calendar extends React.Component {
         formats = defaultFormats( formats );
         messages = message( messages );
 
-        const adapterInstance = new Adapter( culture );
+        const adapterInstance = new Adapter({ locale: culture });
         const View = this.getView();
         const names = viewNames( this.props.views );
 
@@ -132,7 +132,7 @@ class Calendar extends React.Component {
         );
 
         const CalToolbar = components.toolbar || Toolbar;
-        const label = View.title( current, { formats, culture, length } );
+        const label = View.title( adapterInstance, current, { formats, length } );
 
         return (
             <div
@@ -678,28 +678,22 @@ Calendar.propTypes = {
     culture: PropTypes.string,
 
     /**
-     * Localizer specific formats, tell the Calendar how to format and display dates.
-     *
-     * `format` types are dependent on the configured localizer; both Moment and Globalize
-     * accept strings of tokens according to their own specification, such as: `"DD mm yyyy"`.
+     * Specific formats, tell the Calendar how to format and display dates.
      *
      * ```jsx
      * let formats = {
      *   dateFormat: "dd",
      *
-     *   dayFormat: (date, culture, localizer) =>
-     *     localizer.format(date, "DDD", culture),
+     *   dayFormat: (adapter, date) =>
+     *     adapter.format(date, "DDD"),
      *
-     *   dayRangeHeaderFormat: ({ start, end }, culture, local) =>
-     *     local.format(start, { date: "short" }, culture) + " — " +
-     *     local.format(end, { date: "short" }, culture)
+     *   dayRangeHeaderFormat: (adapter, { start, end }) =>
+     *     adapter.format(start, { date: "short" }) + " — " +
+     *     adapter.format(end, { date: "short" })
      * }
      *
      * <Calendar formats={formats} />
      * ```
-     *
-     * All localizers accept a function of
-     * the form `(date: Date, culture: ?string, localizer: Localizer) -> string`
      */
     formats: PropTypes.shape( {
         /**

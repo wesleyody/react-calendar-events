@@ -7,7 +7,6 @@ import getWidth from "dom-helpers/width";
 import scrollbarSize from "dom-helpers/scrollbarSize";
 
 import dates from "./utils/dates";
-import localizer from "./localizer";
 import DayColumn from "./DayColumn";
 import TimeColumn from "./TimeColumn";
 import DateContentRow from "./DateContentRow";
@@ -270,6 +269,7 @@ export default class TimeGrid extends Component {
 
     renderHeaderCells ( range ) {
         const {
+            adapter,
             dayFormat,
             culture,
             components,
@@ -280,7 +280,7 @@ export default class TimeGrid extends Component {
 
         return range.map( ( date, i ) => {
             const drilldownView = getDrilldownView( date );
-            const label = localizer.format( date, dayFormat, culture );
+            const label = adapter.format( date, dayFormat );
 
             const { className, style: dayStyles } = ( dayPropGetter && dayPropGetter( date ) ) || {};
 
@@ -288,7 +288,6 @@ export default class TimeGrid extends Component {
                 <HeaderComponent
                     date={ date }
                     label={ label }
-                    localizer={ localizer }
                     format={ dayFormat }
                     culture={ culture }
                 />

@@ -6,7 +6,6 @@ import cn from "classnames";
 import Selection, { getBoundsForNode, isEvent } from "./Selection";
 import dates from "./utils/dates";
 import { isSelected } from "./utils/selection";
-import localizer from "./localizer";
 import { notify } from "./utils/helpers";
 import { accessor, elementType, dateFormat } from "./utils/propTypes";
 import { accessor as get } from "./utils/accessors";
@@ -55,7 +54,6 @@ class DayColumn extends React.Component {
             max,
             step,
             selectRangeFormat,
-            culture,
             dayPropGetter,
             ...props
         } = this.props;
@@ -90,7 +88,7 @@ class DayColumn extends React.Component {
                 </div>
                 { selecting && (
                     <div className={ css.rbcSlotSelection } style={ slotStyle }>
-                        <span>{ localizer.format( adapter, selectDates, selectRangeFormat, culture )}</span>
+                        <span>{ selectRangeFormat( adapter, selectDates )}</span>
                     </div>
                 )}
             </TimeColumn>
@@ -101,7 +99,6 @@ class DayColumn extends React.Component {
         const {
             adapter,
             components: { event: EventComponent },
-            culture,
             endAccessor,
             eventPropGetter,
             eventTimeRangeEndFormat,
@@ -161,7 +158,7 @@ class DayColumn extends React.Component {
             if ( _continuesPrior && _continuesAfter ) {
                 label = messages.allDay;
             } else {
-                label = localizer.format( adapter, { start, end }, _eventTimeRangeFormat, culture );
+                label = _eventTimeRangeFormat( adapter, { start, end } );
             }
 
             const _isSelected = isSelected( event, selected );

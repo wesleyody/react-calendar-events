@@ -9,7 +9,7 @@ import omit from "lodash/omit";
 import cn from "classnames";
 
 import dates from "./utils/dates";
-import localizer from "./localizer";
+import formatter from "./utils/formatter";
 import { navigate, views } from "./utils/constants";
 import { notify } from "./utils/helpers";
 import Popup from "./Popup";
@@ -202,16 +202,16 @@ class MonthView extends React.Component {
 
     readerDateHeading = ( { date, className, ...props } ) => {
         const {
+            adapter,
             date: currentDate,
             getDrilldownView,
             dateFormat,
-            culture
         } = this.props;
 
         const isOffRange = dates.month( date ) !== dates.month( currentDate );
         const isCurrent = dates.eq( date, currentDate, "day" );
         const drilldownView = getDrilldownView( date );
-        const label = localizer.format( date, dateFormat, culture );
+        const label = adapter.format( date, dateFormat );
         const DateHeaderComponent = this.props.components.dateHeader || DateHeader;
 
         return (
@@ -238,13 +238,13 @@ class MonthView extends React.Component {
         const first = row[ 0 ];
         const last = row[ row.length - 1 ];
         const HeaderComponent = this.props.components.header || Header;
+        const { adapter } = this.props;
 
         return dates.range( first, last, "day" ).map( ( day, idx ) => (
             <div key={ "header_" + idx } className={ css.rbcHeader } style={ segStyle( 1, 7 ) }>
                 <HeaderComponent
                     date={ day }
-                    label={ localizer.format( day, format, culture ) }
-                    localizer={ localizer }
+                    label={ adapter.format( day, format ) }
                     format={ format }
                     culture={ culture }
                 />
@@ -371,7 +371,7 @@ MonthView.navigate = ( date, action ) => {
     }
 };
 
-MonthView.title = ( date, { formats, culture } ) => localizer.format( date, formats.monthHeaderFormat, culture );
+MonthView.title = ( adapter, date, { formats } ) => formatter( adapter, date, formats.monthHeaderFormat );
 
 MonthView.propTypes = propTypes;
 

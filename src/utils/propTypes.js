@@ -1,9 +1,7 @@
 import PropTypes from "prop-types";
 import elementType from "react-prop-types/lib/elementType";
 import all from "react-prop-types/lib/all";
-import createChainableTypeChecker from "react-prop-types/lib/utils/createChainableTypeChecker";
 
-import localizer from "../localizer";
 import { views as Views } from "./constants";
 
 export { elementType };
@@ -32,9 +30,7 @@ export const eventComponent = PropTypes.oneOfType( [
 const viewNames = Object.keys( Views ).map( k => Views[ k ] );
 export const accessor = PropTypes.oneOfType( [ PropTypes.string, PropTypes.func ] );
 
-export const dateFormat = createChainableTypeChecker(
-    ( ...args ) => localizer.propType && localizer.propType( ...args )
-);
+export const dateFormat = PropTypes.oneOfType( [ PropTypes.string, PropTypes.func ] );
 
 export const dateRangeFormat = PropTypes.func;
 

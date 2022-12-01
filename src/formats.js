@@ -6,26 +6,26 @@ function inSame12Hr ( start, end ) {
     return ( s <= 0 && e <= 0 ) || ( s >= 0 && e >= 0 );
 }
 
-const dateRangeFormat = ( { start, end }, culture, local ) =>
-    local.format( start, "d", culture ) + " — " + local.format( end, "d", culture );
+const dateRangeFormat = ( adapter, { start, end } ) =>
+    adapter.format( start, "d" ) + " — " + adapter.format( end, "d" );
 
-const timeRangeFormat = ( { start, end }, culture, local ) =>
-    local.format( start, "h:mmtt", culture ) +
+const timeRangeFormat = ( adapter, { start, end } ) =>
+    adapter.format( start, "h:mmtt") +
     " — " +
-    local.format( end, inSame12Hr( start, end ) ? "h:mm" : "h:mmtt", culture );
+    adapter.format( end, inSame12Hr( start, end ) ? "h:mm" : "h:mmtt" );
 
 /* eslint-disable no-unused-vars */
-const timeRangeStartFormat = ( { start, end }, culture, local ) =>
-    local.format( start, "h:mmtt", culture ) + " — ";
+const timeRangeStartFormat = ( adapter, { start, end } ) =>
+    adapter.format( start, "h:mmtt" ) + " — ";
 
 /* eslint-disable no-unused-vars */
-const timeRangeEndFormat = ( { start, end }, culture, local ) =>
-    " — " + local.format( end, "h:mmtt", culture );
+const timeRangeEndFormat = ( adapter, { start, end } ) =>
+    " — " + adapter.format( end, "h:mmtt" );
 
-const weekRangeFormat = ( { start, end }, culture, local ) =>
-    local.format( start, "MMM dd", culture ) +
+const weekRangeFormat = ( adapter, { start, end } ) =>
+    adapter.format( start, "MMM dd" ) +
     " - " +
-    local.format( end, dates.eq( start, end, "month" ) ? "dd" : "MMM dd", culture );
+    adapter.format( end, dates.eq( start, end, "month" ) ? "dd" : "MMM dd" );
 
 const formats = {
     dateFormat: "dd",
@@ -39,7 +39,7 @@ const formats = {
 
     timeGutterFormat: "h:mm tt",
 
-    monthHeaderFormat: "MMMM yyyy",
+    monthHeaderFormat: "MMMM YYYY",
     dayHeaderFormat: "dddd MMM dd",
     dayRangeHeaderFormat: weekRangeFormat,
     agendaHeaderFormat: dateRangeFormat,
