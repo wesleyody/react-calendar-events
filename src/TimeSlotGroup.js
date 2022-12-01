@@ -3,7 +3,6 @@ import { Component } from "react";
 
 import TimeSlot from "./TimeSlot";
 import date from "./utils/dates.js";
-import localizer from "./localizer";
 import { elementType, dateFormat } from "./utils/propTypes";
 import css from "./calendar.scss";
 
@@ -39,11 +38,9 @@ export default class TimeSlotGroup extends Component {
         const sliceLength = this.props.step;
         let sliceValue = this.props.value;
         for ( let i = 0; i < this.props.timeslots; i++ ) {
-            const content = localizer.format(
-                this.props.adapter,
+            const content = this.props.adapter.format(
                 sliceValue,
                 this.props.timeGutterFormat,
-                this.props.culture
             );
             ret.push( this.renderSlice( i, content, sliceValue ) );
             sliceValue = date.add( sliceValue, sliceLength, "minutes" );

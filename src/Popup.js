@@ -6,7 +6,6 @@ import getScrollLeft from "dom-helpers/scrollLeft";
 
 import EventCell from "./EventCell";
 import { isSelected } from "./utils/selection";
-import localizer from "./localizer";
 import { elementType, dateFormat } from "./utils/propTypes";
 import css from "./calendar.scss";
 
@@ -73,11 +72,9 @@ class Popup extends React.Component {
         return (
             <div ref={ popperRef } style={ style } className={ css.rbcOverlay }>
                 <div className={ css.rbcOverlayHeader }>
-                    { localizer.format(
-                        props.adapter,
+                    { props.adapter.format(
                         props.slotStart,
                         props.dayHeaderFormat,
-                        props.culture
                     )}
                 </div>
                 { events.map( ( event, idx ) => (

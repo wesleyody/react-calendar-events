@@ -1,7 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
 import dates from "./utils/dates";
-import localizer from "./localizer";
 import { navigate } from "./utils/constants";
 import TimeGrid from "./TimeGrid";
 
@@ -36,12 +35,11 @@ Week.range = date => {
     return dates.range( start, end );
 };
 
-Week.title = ( date, { formats, culture } ) => {
-    const [ start, ...rest ] = Week.range( date, { culture } );
-    return localizer.format(
+Week.title = ( adapter, date, { formats } ) => {
+    const [ start, ...rest ] = Week.range( date );
+    return formats.dayRangeHeaderFormat(
+        adapter,
         { start, end: rest.pop() },
-        formats.dayRangeHeaderFormat,
-        culture
     );
 };
 

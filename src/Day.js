@@ -2,9 +2,9 @@ import PropTypes from "prop-types";
 import React from "react";
 
 import dates from "./utils/dates";
+import formatter from "./utils/formatter";
 import { navigate } from "./utils/constants";
 import TimeGrid from "./TimeGrid";
-import localizer from "./localizer";
 
 class Day extends React.Component {
 
@@ -35,9 +35,7 @@ Day.navigate = ( date, action ) => {
     }
 };
 
-Day.title = ( adapter, date, { formats, culture } ) => (
-    localizer.format( adapter, date, formats.dayHeaderFormat, culture )
-);
+Day.title = ( adapter, date, { formats } ) => formatter( adapter, date, formats.dayHeaderFormat );
 
 Day.propTypes = {
     date: PropTypes.instanceOf( Date ).isRequired

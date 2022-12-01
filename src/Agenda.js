@@ -6,7 +6,6 @@ import getWidth from "dom-helpers/width";
 import scrollbarSize from "dom-helpers/scrollbarSize";
 import classnames from "classnames";
 
-import localizer from "./localizer";
 import message from "./utils/messages";
 import dates from "./utils/dates";
 import { navigate } from "./utils/constants";
@@ -63,7 +62,7 @@ class Agenda extends React.Component {
 
     renderDay = ( day, events, dayKey ) => {
         const {
-            culture,
+            adapter,
             components,
             titleAccessor,
             agendaDateFormat,
@@ -88,7 +87,7 @@ class Agenda extends React.Component {
                 )
                 : {};
             const dateLabel =
-                idx === 0 && localizer.format( day, agendaDateFormat, culture );
+                idx === 0 && adapter.format( day, agendaDateFormat );
             const first =
                 idx === 0 ?
                     <td rowSpan={events.length} className={ css.rbcAgendaDateCell }>
@@ -118,7 +117,6 @@ class Agenda extends React.Component {
             endAccessor,
             startAccessor,
             allDayAccessor,
-            culture,
             messages,
             components,
         } = this.props;
@@ -132,11 +130,11 @@ class Agenda extends React.Component {
 
         if ( !get( event, allDayAccessor ) ) {
             if ( dates.eq( start, end, "day" ) ) {
-                label = localizer.format( adapter, { start, end }, this.props.agendaTimeRangeFormat, culture );
+                label = this.props.agendaTimeRangeFormat( adapter, { start, end } );
             } else if ( dates.eq( day, start, "day" ) ) {
-                label = localizer.format( adapter, start, this.props.agendaTimeFormat, culture );
+                label = adapter.format( start, this.props.agendaTimeFormat );
             } else if ( dates.eq( day, end, "day" ) ) {
-                label = localizer.format( adapter, end, this.props.agendaTimeFormat, culture );
+                label = adapter.format( end, this.props.agendaTimeFormat );
             }
         }
 
@@ -198,14 +196,14 @@ Agenda.navigate = ( date, action, { length = Agenda.defaultProps.length } ) => {
     }
 };
 
-Agenda.title = ( adapter, start, { length = Agenda.defaultProps.length, formats, culture } ) => {
+Agenda.title = ( adapter, start, { length = Agenda.defaultProps.length, formats } ) => {
     const end = dates.add( start, length, "day" );
-    return localizer.format( adapter, { start, end }, formats.agendaHeaderFormat, culture );
+    return formats.agendaHeaderFormat( adapter, { start, end } );
 };
 
-Agenda.title = ( adapter, start, { length = ( length = Agenda.defaultProps.length ), formats, culture } ) => {
+Agenda.title = ( adapter, start, { length = ( length = Agenda.defaultProps.length ), formats } ) => {
     const end = dates.add( start, length, "day" );
-    return localizer.format( adapter, { start, end }, formats.agendaHeaderFormat, culture );
+    return formats.agendaHeaderFormat( adapter, { start, end } );
 };
 
 Agenda.propTypes = {
