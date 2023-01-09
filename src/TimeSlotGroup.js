@@ -1,14 +1,12 @@
 import PropTypes from "prop-types";
-import { Component } from "react";
 
 import TimeSlot from "./TimeSlot";
 import date from "./utils/dates.js";
 import { elementType, dateFormat } from "./utils/propTypes";
 import css from "./calendar.scss";
 
-export default class TimeSlotGroup extends Component {
-
-    renderSlice ( slotNumber, content, value ) {
+const TimeSlotGroup = props => {
+    const renderSlice = ( slotNumber, content, value ) => {
         const {
             dayWrapperComponent,
             showLabels,
@@ -16,7 +14,7 @@ export default class TimeSlotGroup extends Component {
             culture,
             resource,
             slotPropGetter,
-        } = this.props;
+        } = props;
 
         return (
             <TimeSlot
@@ -31,28 +29,25 @@ export default class TimeSlotGroup extends Component {
                 value={ value }
             />
         );
-    }
+    };
 
-    renderSlices () {
+    const renderSlices = () => {
         const ret = [];
-        const sliceLength = this.props.step;
-        let sliceValue = this.props.value;
-        for ( let i = 0; i < this.props.timeslots; i++ ) {
-            const content = this.props.adapter.format(
+        const sliceLength = props.step;
+        let sliceValue = props.value;
+        for ( let i = 0; i < props.timeslots; i++ ) {
+            const content = props.adapter.format(
                 sliceValue,
-                this.props.timeGutterFormat,
+                props.timeGutterFormat,
             );
-            ret.push( this.renderSlice( i, content, sliceValue ) );
+            ret.push( renderSlice( i, content, sliceValue ) );
             sliceValue = date.add( sliceValue, sliceLength, "minutes" );
         }
         return ret;
-    }
+    };
 
-    render () {
-        return <div className={ css.rbcTimeslotGroup }> { this.renderSlices() }</div>;
-    }
-
-}
+    return <div className={ css.rbcTimeslotGroup }> { renderSlices() }</div>;
+};
 
 TimeSlotGroup.propTypes = {
     dayWrapperComponent: elementType,
@@ -72,3 +67,5 @@ TimeSlotGroup.defaultProps = {
     isNow: false,
     showLabels: false
 };
+
+export default TimeSlotGroup;

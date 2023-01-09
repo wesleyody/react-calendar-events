@@ -15,112 +15,57 @@ import { inRange } from "./utils/eventLevels";
 import { isSelected } from "./utils/selection";
 import css from "./calendar.scss";
 
-class Agenda extends React.Component {
+const Agenda = ({
+    length,
+    date,
+    adapter,
+    agendaTimeFormat,
+    agendaTimeRangeFormat,
+    endAccessor,
+    startAccessor,
+    allDayAccessor,
+    messages,
+    components,
+    titleAccessor,
+    agendaDateFormat,
+    eventPropGetter,
+    selected,
+}) => {
+    const header = React.useRef();
+    const tbody = React.useRef();
+    const content = React.useRef();
+    const dateCol = React.useRef();
+    const timeCol = React.useRef();
 
-    componentDidMount () {
-        this._adjustHeader();
-    }
+    const widths = React.useState( [] );
 
-    componentDidUpdate () {
-        this._adjustHeader();
-    }
+    const adjustHeader = React.useCallback( () => {
+        const firstRow = tbody.firstChild;
 
-    render () {
-        const { length, date, startAccessor } = this.props;
-        const messages = message( this.props.messages );
-        const end = dates.add( date, length, "day" );
-        const range = dates.range( date, end, "day" );
+        if ( !firstRow ) {
+            return;
+        }
 
-        const events = this.props.events.filter( event => inRange( event, date, end, this.props ) );
-        events.sort( ( a, b ) => +get( a, startAccessor ) - +get( b, startAccessor ) );
+        const isOverflowing = content.scrollHeight > content.clientHeight;
+        const w = [
+            getWidth( firstRow.children[ 0 ] ),
+            getWidth( firstRow.children[ 1 ] )
+        ];
 
-        return (
-            <div className={ css.rbcAgendaView }>
-                <table ref="header">
-                    <thead>
-                        <tr>
-                            <th className={ css.rbcHeader } ref="dateCol">
-                                { messages.date }
-                            </th>
-                            <th className={ css.rbcHeader } ref="timeCol">
-                                { messages.time }
-                            </th>
-                            <th className={ css.rbcHeader }>{ messages.event }</th>
-                        </tr>
-                    </thead>
-                </table>
-                <div className={ css.rbcAgendaContent } ref="content">
-                    <table>
-                        <tbody ref="tbody">
-                            { range.map( ( day, idx ) => this.renderDay( day, events, idx ) ) }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        );
-    }
+        if ( widths[ 0 ] !== w[ 0 ] || widths[ 1 ] !== w[ 1 ] ) {
+            dateCol.style.width = w[ 0 ] + "px";
+            timeCol.style.width = w[ 1 ] + "px";
+        }
 
-    renderDay = ( day, events, dayKey ) => {
-        const {
-            adapter,
-            components,
-            titleAccessor,
-            agendaDateFormat,
-            eventPropGetter,
-            startAccessor,
-            endAccessor,
-            selected,
-        } = this.props;
+        if ( isOverflowing ) {
+            addClass( header, css.rbcHeaderOverflowing );
+            header.style.marginRight = scrollbarSize() + "px";
+        } else {
+            removeClass( header, css.rbcHeaderOverflowing );
+        }
+    }, [ tbody, content, widths ] );
 
-        const EventComponent = components.event;
-        const DateComponent = components.date;
-
-        events = events.filter( e => inRange( e, day, day, this.props ) );
-
-        return events.map( ( event, idx ) => {
-            const { className, style } = eventPropGetter
-                ? eventPropGetter(
-                    event,
-                    get( event, startAccessor ),
-                    get( event, endAccessor ),
-                    isSelected( event, selected )
-                )
-                : {};
-            const dateLabel =
-                idx === 0 && adapter.format( day, agendaDateFormat );
-            const first =
-                idx === 0 ?
-                    <td rowSpan={events.length} className={ css.rbcAgendaDateCell }>
-                        { DateComponent ? <DateComponent day={ day } label={ dateLabel }/> : dateLabel }
-                    </td> :
-                    false;
-
-            const title = get( event, titleAccessor );
-
-            return (
-                <tr key={ dayKey + "_" + idx } className={ className } style={ style }>
-                    { first }
-                    <td className={ css.rbcAgendaTimeCell }>
-                        { this.timeRangeLabel( day, event ) }
-                    </td>
-                    <td className={ css.rbcAgendaEventCell }>
-                        { EventComponent ? <EventComponent event={event} title={title}/> : title }
-                    </td>
-                </tr>
-            );
-        }, [] );
-    };
-
-    timeRangeLabel = ( day, event ) => {
-        const {
-            adapter,
-            endAccessor,
-            startAccessor,
-            allDayAccessor,
-            messages,
-            components,
-        } = this.props;
-
+    const timeRangeLabel = ( day, event ) => {
         let labelClass = "";
         const TimeComponent = components.time;
         let label = message( messages ).allDay;
@@ -130,11 +75,11 @@ class Agenda extends React.Component {
 
         if ( !get( event, allDayAccessor ) ) {
             if ( dates.eq( start, end, "day" ) ) {
-                label = this.props.agendaTimeRangeFormat( adapter, { start, end } );
+                label = agendaTimeRangeFormat( adapter, { start, end } );
             } else if ( dates.eq( day, start, "day" ) ) {
-                label = adapter.format( start, this.props.agendaTimeFormat );
+                label = adapter.format( start, agendaTimeFormat );
             } else if ( dates.eq( day, end, "day" ) ) {
-                label = adapter.format( end, this.props.agendaTimeFormat );
+                label = adapter.format( end, agendaTimeFormat );
             }
         }
 
@@ -153,35 +98,82 @@ class Agenda extends React.Component {
         );
     };
 
-    _adjustHeader = () => {
-        const header = this.refs.header;
-        const firstRow = this.refs.tbody.firstChild;
+    const renderDay = ( day, events, dayKey ) => {
+        const EventComponent = components.event;
+        const DateComponent = components.date;
 
-        if ( !firstRow ) {
-            return;
-        }
+        events = events.filter( e => inRange( e, day, day, { startAccessor, endAccessor } ) );
 
-        const isOverflowing = this.refs.content.scrollHeight > this.refs.content.clientHeight;
-        const widths = this._widths || [];
-        this._widths = [
-            getWidth( firstRow.children[ 0 ] ),
-            getWidth( firstRow.children[ 1 ] )
-        ];
+        return events.map( ( event, idx ) => {
+            const { className, style } = eventPropGetter
+                ? eventPropGetter(
+                    event,
+                    get( event, startAccessor ),
+                    get( event, endAccessor ),
+                    isSelected( event, selected )
+                )
+                : {};
+            const dateLabel =
+                idx === 0 && adapter.format( day, agendaDateFormat );
+            const first =
+                idx === 0 ?
+                    <td rowSpan={ events.length } className={ css.rbcAgendaDateCell }>
+                        { DateComponent ? <DateComponent day={ day } label={ dateLabel }/> : dateLabel }
+                    </td> :
+                    false;
 
-        if ( widths[ 0 ] !== this._widths[ 0 ] || widths[ 1 ] !== this._widths[ 1 ] ) {
-            this.refs.dateCol.style.width = this._widths[ 0 ] + "px";
-            this.refs.timeCol.style.width = this._widths[ 1 ] + "px";
-        }
+            const title = get( event, titleAccessor );
 
-        if ( isOverflowing ) {
-            addClass( header, css.rbcHeaderOverflowing );
-            header.style.marginRight = scrollbarSize() + "px";
-        } else {
-            removeClass( header, css.rbcHeaderOverflowing );
-        }
-    }
+            return (
+                <tr key={ dayKey + "_" + idx } className={ className } style={ style }>
+                    { first }
+                    <td className={ css.rbcAgendaTimeCell }>
+                        { timeRangeLabel( day, event ) }
+                    </td>
+                    <td className={ css.rbcAgendaEventCell }>
+                        { EventComponent ? <EventComponent event={ event } title={ title }/> : title }
+                    </td>
+                </tr>
+            );
+        }, [] );
+    };
 
-}
+    const messagesData = message( messages );
+    const end = dates.add( date, length, "day" );
+    const range = dates.range( date, end, "day" );
+
+    const events = events.filter( event => inRange( event, date, end, { startAccessor, endAccessor } ) );
+    events.sort( ( a, b ) => +get( a, startAccessor ) - +get( b, startAccessor ) );
+
+    React.useEffect( () => {
+        adjustHeader();
+    }, [ adjustHeader ] );
+
+    return (
+        <div className={ css.rbcAgendaView }>
+            <table ref="header">
+                <thead>
+                    <tr>
+                        <th className={ css.rbcHeader } ref="dateCol">
+                            { messagesData.date }
+                        </th>
+                        <th className={ css.rbcHeader } ref="timeCol">
+                            { messagesData.time }
+                        </th>
+                        <th className={ css.rbcHeader }>{ messagesData.event }</th>
+                    </tr>
+                </thead>
+            </table>
+            <div className={ css.rbcAgendaContent } ref="content">
+                <table>
+                    <tbody ref="tbody">
+                        { range.map( ( day, idx ) => renderDay( day, events, idx ) ) }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+};
 
 Agenda.navigate = ( date, action, { length = Agenda.defaultProps.length } ) => {
     switch ( action ) {

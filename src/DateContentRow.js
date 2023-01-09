@@ -2,7 +2,6 @@ import cn from "classnames";
 import getHeight from "dom-helpers/height";
 import PropTypes from "prop-types";
 import React from "react";
-import { findDOMNode } from "react-dom";
 
 import dates from "./utils/dates";
 import { accessor, elementType } from "./utils/propTypes";
@@ -60,6 +59,10 @@ class DateContentRow extends React.Component {
 
     constructor ( ...args ) {
         super( ...args );
+
+        this.root = React.createRef();
+        this.headingRow = React.createRef();
+        this.eventRow = React.createRef();
     }
 
     handleSelectSlot = slot => {
@@ -70,7 +73,7 @@ class DateContentRow extends React.Component {
 
     handleShowMore = ( slot, target ) => {
         const { range, onShowMore } = this.props;
-        const row = findDOMNode( this ).getElementsByClassName( css.rbcRowBg )[ 0 ];
+        const row = this.root.current.getElementsByClassName( css.rbcRowBg )[ 0 ];
 
         let cell;
         if ( row ) {
@@ -84,23 +87,15 @@ class DateContentRow extends React.Component {
         onShowMore( events, range[ slot - 1 ], cell, slot, target );
     };
 
-    createHeadingRef = r => {
-        this.headingRow = r;
-    };
-
-    createEventRef = r => {
-        this.eventRow = r;
-    };
-
     getContainer = () => {
         const { container } = this.props;
-        return container ? container() : findDOMNode( this );
+        return container ? container() : this.root.current;
     };
 
     getRowLimit () {
-        const eventHeight = getHeight( this.eventRow );
-        const headingHeight = this.headingRow ? getHeight( this.headingRow ) : 0;
-        const eventSpace = getHeight( findDOMNode( this ) ) - headingHeight;
+        const eventHeight = getHeight( this.eventRow.current );
+        const headingHeight = this.headingRow ? getHeight( this.headingRow.current ) : 0;
+        const eventSpace = getHeight( this.root.current ) - headingHeight;
 
         return Math.max( Math.floor( eventSpace / eventHeight ), 1 );
     }
@@ -122,14 +117,14 @@ class DateContentRow extends React.Component {
     renderDummy = () => {
         const { className, range, renderHeader } = this.props;
         return (
-            <div className={ className }>
+            <div className={ className } ref={ this.root }>
                 <div className={ css.rbcRowContent }>
                     { renderHeader && (
-                        <div className={ css.rbcRow } ref={ this.createHeadingRef }>
+                        <div className={ css.rbcRow } ref={ this.headingRow }>
                             { range.map( this.renderHeadingCell )}
                         </div>
                     )}
-                    <div className={ css.rbcRow } ref={ this.createEventRef }>
+                    <div className={ css.rbcRow } ref={ this.eventRow }>
                         <div className={ css.rbcRowSegment } style={ segStyle( 1, range.length )}>
                             <div className={ css.rbcEvent }>
                                 <div className={ css.rbcEventContent }>&nbsp;</div>
@@ -191,7 +186,7 @@ class DateContentRow extends React.Component {
         }
 
         return (
-            <div className={ className }>
+            <div className={ className } ref={ this.root }>
                 <BackgroundCells
                     date={ date }
                     getNow={ getNow }
@@ -209,7 +204,7 @@ class DateContentRow extends React.Component {
 
                 <div className={ css.rbcRowContent }>
                     { renderHeader && (
-                        <div className={ css.rbcRow } ref={this.createHeadingRef }>
+                        <div className={ css.rbcRow } ref={ this.headingRow }>
                             { range.map( this.renderHeadingCell )}
                         </div>
                     )}

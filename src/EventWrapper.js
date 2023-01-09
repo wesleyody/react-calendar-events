@@ -1,11 +1,5 @@
-import React from "react";
-
-class EventWrapper extends React.Component {
-
-    render () {
-        return this.props.children;
-    }
-
-}
+const EventWrapper = ({ children }) => {
+    return children;
+};
 
 export default EventWrapper;

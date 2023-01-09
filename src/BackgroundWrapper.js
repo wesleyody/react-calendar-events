@@ -1,13 +1,8 @@
-import React from "react";
 import PropTypes from "prop-types";
 
-class BackgroundWrapper extends React.Component {
-
-    render () {
-        return this.props.children;
-    }
-
-}
+const BackgroundWrapper = ({ children }) => {
+    return children;
+};
 
 BackgroundWrapper.propTypes = {
     children: PropTypes.element,

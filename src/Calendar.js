@@ -57,10 +57,23 @@ function isValidView ( view, { views: _views } ) {
  * @static
  * @memberof Calendar
  */
-class Calendar extends React.Component {
+const Calendar = ({
+    adapter: Adapter,
+    view,
+    toolbar,
+    events,
+    culture,
+    components = {},
+    style,
+    className,
+    elementProps,
+    getNow,
+    ...props
+}) => {
+    const container = React.useRef();
 
-    getViews = () => {
-        const views = this.props.views;
+    const getViews = () => {
+        const views = props.views;
 
         if ( Array.isArray( views ) ) {
             return transform( views, ( obj, name ) => (obj[ name ] = VIEWS[ name ]), {} );
@@ -79,110 +92,29 @@ class Calendar extends React.Component {
         return VIEWS;
     };
 
-    getView = () => {
-        const views = this.getViews();
+    const getView = () => {
+        const views = getViews();
 
-        return views[ this.props.view ];
+        return views[ view ];
     };
 
-    getDrilldownView = date => {
-        const { view, drilldownView, getDrilldownView } = this.props;
+    const getDrilldownView = date => {
+        const { drilldownView, getDrilldownView } = props;
 
         if ( !getDrilldownView ) {
             return drilldownView;
         }
 
-        return getDrilldownView( date, view, Object.keys( this.getViews() ) );
+        return getDrilldownView( date, view, Object.keys( getViews() ) );
     };
 
-    render () {
-        const {
-            adapter: Adapter,
-            view,
-            toolbar,
-            events,
-            culture,
-            components = {},
-            style,
-            className,
-            elementProps,
-            getNow,
-            length,
-            ...props
-        } = this.props;
-        let { date: current, formats = {}, messages = {} } = this.props;
-
-        current = current || getNow();
-
-        formats = defaultFormats( formats );
-        messages = message( messages );
-
-        const adapterInstance = new Adapter({ locale: culture });
-        const View = this.getView();
-        const names = viewNames( this.props.views );
-
-        const viewComponents = defaults(
-            components[ view ] || {},
-            omit( components, names ),
-            {
-                eventWrapper: EventWrapper,
-                dayWrapper: BackgroundWrapper,
-                dateCellWrapper: BackgroundWrapper
-            }
-        );
-
-        const CalToolbar = components.toolbar || Toolbar;
-        const label = View.title( adapterInstance, current, { formats, length } );
-
-        return (
-            <div
-                { ...elementProps }
-                className={ cn( css.rbcCalendar, className, props.rtl ? css.rbcRtl : "" )}
-                style={ style }
-            >
-                { toolbar && (
-                    <CalToolbar
-                        date={ current }
-                        view={ view }
-                        views={ names }
-                        label={ label }
-                        onViewChange={ this.handleViewChange }
-                        onNavigate={ this.handleNavigate }
-                        messages={ messages }
-                    />
-                )}
-                <View
-                    ref="view"
-                    { ...props }
-                    { ...formats }
-                    adapter={ adapterInstance }
-                    messages={ messages }
-                    culture={ culture }
-                    formats={ undefined }
-                    events={ events }
-                    date={ current }
-                    getNow={ getNow }
-                    length={ length }
-                    components={ viewComponents }
-                    getDrilldownView={ this.getDrilldownView }
-                    onNavigate={ this.handleNavigate }
-                    onDrillDown={ this.handleDrillDown }
-                    onSelectEvent={ this.handleSelectEvent }
-                    onDoubleClickEvent={ this.handleDoubleClickEvent }
-                    onSelectSlot={ this.handleSelectSlot }
-                    onShowMore={ this._showMore }
-                />
-            </div>
-        );
-    }
-
-    handleNavigate = ( action, newDate ) => {
-        const { view, getNow, onNavigate, ...props } = this.props;
-        let { date } = this.props;
-        const ViewComponent = this.getView();
+    const handleNavigate = ( action, newDate ) => {
+        const { onNavigate, ...otherProps } = props;
+        let { date } = props;
+        const ViewComponent = getView();
 
         date = moveDate( ViewComponent, {
-            ...props,
+            ...otherProps,
             action,
             date: newDate || date,
             today: getNow()
@@ -191,38 +123,100 @@ class Calendar extends React.Component {
         onNavigate( date, view, action );
     };
 
-    handleViewChange = view => {
-        if ( view !== this.props.view && isValidView( view, this.props ) ) {
-            this.props.onView( view );
+    const handleViewChange = newView => {
+        if ( view !== newView && isValidView( newView, props ) ) {
+            props.onView( newView );
         }
     };
 
-    handleSelectEvent = ( ...args ) => {
-        notify( this.props.onSelectEvent, args );
+    const handleSelectEvent = ( ...args ) => {
+        notify( props.onSelectEvent, args );
     };
 
-    handleDoubleClickEvent = ( ...args ) => {
-        notify( this.props.onDoubleClickEvent, args );
+    const handleDoubleClickEvent = ( ...args ) => {
+        notify( props.onDoubleClickEvent, args );
     };
 
-    handleSelectSlot = slotInfo => {
-        notify( this.props.onSelectSlot, slotInfo );
+    const handleSelectSlot = slotInfo => {
+        notify( props.onSelectSlot, slotInfo );
     };
 
-    handleDrillDown = ( date, view ) => {
-        const { onDrillDown } = this.props;
+    const handleDrillDown = ( date, view ) => {
+        const { onDrillDown, drilldownView } = props;
         if ( onDrillDown ) {
-            onDrillDown( date, view, this.drilldownView );
+            onDrillDown( date, view, drilldownView );
             return;
         }
         if ( view ) {
-            this.handleViewChange( view );
+            handleViewChange( view );
         }
 
-        this.handleNavigate( navigate.DATE, date );
-    }
+        handleNavigate( navigate.DATE, date );
+    };
 
-}
+    let { date: current, formats = {}, messages = {} } = props;
+
+    current = current || getNow();
+
+    formats = defaultFormats( formats );
+    messages = message( messages );
+
+    const adapterInstance = new Adapter({ locale: culture });
+    const View = getView();
+    const names = viewNames( props.views );
+
+    const viewComponents = defaults(
+        components[ view ] || {},
+        omit( components, names ),
+        {
+            eventWrapper: EventWrapper,
+            dayWrapper: BackgroundWrapper,
+            dateCellWrapper: BackgroundWrapper
+        }
+    );
+
+    const CalToolbar = components.toolbar || Toolbar;
+    const label = View.title( adapterInstance, current, { formats, length } );
+
+    return (
+        <div
+            { ...elementProps }
+            className={ cn( css.rbcCalendar, className, props.rtl ? css.rbcRtl : "" )}
+            style={ style }
+        >
+            { toolbar && (
+                <CalToolbar
+                    date={ current }
+                    view={ view }
+                    views={ names }
+                    label={ label }
+                    onViewChange={ handleViewChange }
+                    onNavigate={ handleNavigate }
+                    messages={ messages }
+                />
+            )}
+            <View
+                ref={ container }
+                { ...props }
+                { ...formats }
+                adapter={ adapterInstance }
+                messages={ messages }
+                culture={ culture }
+                formats={ undefined }
+                events={ events }
+                date={ current }
+                getNow={ getNow }
+                components={ viewComponents }
+                getDrilldownView={ getDrilldownView }
+                onNavigate={ handleNavigate }
+                onDrillDown={ handleDrillDown }
+                onSelectEvent={ handleSelectEvent }
+                onDoubleClickEvent={ handleDoubleClickEvent }
+                onSelectSlot={ handleSelectSlot }
+            />
+        </div>
+    );
+};
 
 Calendar.propTypes = {
     /**

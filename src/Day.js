@@ -6,21 +6,20 @@ import formatter from "./utils/formatter";
 import { navigate } from "./utils/constants";
 import TimeGrid from "./TimeGrid";
 
-class Day extends React.Component {
+const Day = React.forwardRef(( { date, ...props }, ref ) => {
+    const range = React.useMemo( () => {
+        return [ dates.startOf( date, "day" ) ];
+    }, [ date ] );
 
-    render () {
-        const { date, ...props } = this.props;
-
-        return (
-            <TimeGrid
-                { ...props }
-                range={[ dates.startOf( date, "day" ) ]}
-                eventOffset={ 10 }
-            />
-        );
-    }
-
-}
+    return (
+        <TimeGrid
+            { ...props }
+            ref={ ref }
+            range={ range }
+            eventOffset={ 10 }
+        />
+    );
+});
 
 Day.navigate = ( date, action ) => {
     switch ( action ) {

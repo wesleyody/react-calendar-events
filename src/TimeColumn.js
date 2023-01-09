@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { Component } from "react";
+import React from "react";
 import cn from "classnames";
 
 import dates from "./utils/dates";
@@ -8,21 +8,25 @@ import BackgroundWrapper from "./BackgroundWrapper";
 import TimeSlotGroup from "./TimeSlotGroup";
 import css from "./calendar.scss";
 
-export default class TimeColumn extends Component {
-
-    renderTimeSliceGroup ( key, isNow, date, resource ) {
-        const {
-            adapter,
-            dayWrapperComponent,
-            timeslots,
-            showLabels,
-            step,
-            slotPropGetter,
-            dayPropGetter,
-            timeGutterFormat,
-            culture
-        } = this.props;
-
+const TimeColumn = React.forwardRef(({
+    adapter,
+    dayWrapperComponent,
+    timeslots,
+    showLabels,
+    step,
+    slotPropGetter,
+    dayPropGetter,
+    timeGutterFormat,
+    culture,
+    className,
+    children,
+    style,
+    getNow,
+    min,
+    max,
+    resource,
+}, ref ) => {
+    const renderTimeSliceGroup = ( key, isNow, date, resource ) => {
         return (
             <TimeSlotGroup
                 key={ key }
@@ -40,53 +44,39 @@ export default class TimeColumn extends Component {
                 dayWrapperComponent={ dayWrapperComponent }
             />
         );
-    }
+    };
 
-    render () {
-        const {
-            className,
-            children,
-            style,
-            getNow,
-            min,
-            max,
-            step,
-            timeslots,
-            resource
-        } = this.props;
-        const totalMin = dates.diff( min, max, "minutes" );
-        const numGroups = Math.ceil( totalMin / ( step * timeslots ) );
-        const renderedSlots = [];
-        const groupLengthInMinutes = step * timeslots;
+    const totalMin = dates.diff( min, max, "minutes" );
+    const numGroups = Math.ceil( totalMin / ( step * timeslots ) );
+    const renderedSlots = [];
+    const groupLengthInMinutes = step * timeslots;
 
-        let date = min;
-        let next = date;
-        let isNow = false;
-        const now = getNow();
+    let date = min;
+    let next = date;
+    let isNow = false;
+    const now = getNow();
 
-        for ( let i = 0; i < numGroups; i++ ) {
-            isNow = dates.inRange(
-                now,
-                date,
-                dates.add( next, groupLengthInMinutes - 1, "minutes" ),
-                "minutes"
-            );
-
-            next = dates.add( date, groupLengthInMinutes, "minutes" );
-            renderedSlots.push( this.renderTimeSliceGroup( i, isNow, date, resource ) );
-
-            date = next;
-        }
-
-        return (
-            <div className={ cn( className, css.rbcTimeColumn )} style={ style }>
-                { renderedSlots }
-                { children }
-            </div>
+    for ( let i = 0; i < numGroups; i++ ) {
+        isNow = dates.inRange(
+            now,
+            date,
+            dates.add( next, groupLengthInMinutes - 1, "minutes" ),
+            "minutes"
         );
+
+        next = dates.add( date, groupLengthInMinutes, "minutes" );
+        renderedSlots.push( renderTimeSliceGroup( i, isNow, date, resource ) );
+
+        date = next;
     }
 
-}
+    return (
+        <div ref={ ref } className={ cn( className, css.rbcTimeColumn )} style={ style }>
+            { renderedSlots }
+            { children }
+        </div>
+    );
+});
 
 TimeColumn.propTypes = {
     step: PropTypes.number.isRequired,
@@ -114,3 +104,5 @@ TimeColumn.defaultProps = {
     className: "",
     dayWrapperComponent: BackgroundWrapper
 };
+
+export default TimeColumn;

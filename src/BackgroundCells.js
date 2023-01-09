@@ -1,6 +1,5 @@
 import PropTypes from "prop-types";
 import React from "react";
-import { findDOMNode } from "react-dom";
 import cn from "classnames";
 
 import dates from "./utils/dates";
@@ -13,36 +12,138 @@ import css from "./calendar.scss";
 
 class BackgroundCells extends React.Component {
 
-    constructor ( props, context ) {
-        super( props, context );
+    constructor ( props ) {
+        super( props );
 
         this.state = {
             selecting: false
         };
+
+        this.node = React.createRef();
     }
 
     componentDidMount () {
-        this.props.selectable && this._selectable();
+        this.props.selectable && this.selectable();
     }
 
     componentWillUnmount () {
-        this._teardownSelectable();
+        this.teardownSelectable();
     }
 
     componentDidUpdate ( prevProps ) {
         if ( this.props.selectable && !prevProps.selectable ) {
-            this._selectable();
+            this.selectable();
         }
         if ( !this.props.selectable && prevProps.selectable ) {
-            this._teardownSelectable();
+            this.teardownSelectable();
         }
     }
+
+    selectable = () => {
+        const selector = ( this.selector = new Selection( this.props.container, {
+            longPressThreshold: this.props.longPressThreshold
+        }));
+
+        const selectorClicksHandler = ( point, actionType ) => {
+            if ( !isEvent( this.node.current, point ) ) {
+                const rowBox = getBoundsForNode( this.node.current );
+                const { range, rtl } = this.props;
+
+                if ( pointInBox( rowBox, point ) ) {
+                    const width = slotWidth( getBoundsForNode( this.node.current ), range.length );
+                    const currentCell = getCellAtX(
+                        rowBox,
+                        point.x,
+                        width,
+                        rtl,
+                        range.length
+                    );
+
+                    this.selectSlot({
+                        startIdx: currentCell,
+                        endIdx: currentCell,
+                        action: actionType,
+                    });
+                }
+            }
+
+            this._initial = {};
+            this.setState( { selecting: false } );
+        };
+
+        selector.on( "selecting", box => {
+            const { range, rtl } = this.props;
+
+            let startIdx = -1;
+            let endIdx = -1;
+
+            if ( !this.state.selecting ) {
+                notify( this.props.onSelectStart, [ box ] );
+                this._initial = { x: box.x, y: box.y };
+            }
+            if ( selector.isSelected( this.node.current ) ) {
+                const nodeBox = getBoundsForNode( this.node.current );
+                ({ startIdx, endIdx } = dateCellSelection(
+                    this._initial,
+                    nodeBox,
+                    box,
+                    range.length,
+                    rtl
+                ));
+            }
+
+            this.setState( {
+                selecting: true,
+                startIdx,
+                endIdx
+            } );
+        } );
+
+        selector.on( "beforeSelect", box => {
+            if ( this.props.selectable !== "ignoreEvents" ) {
+                return;
+            }
+            return !isEvent( this.node.current, box );
+        } );
+
+        selector.on( "click", point => selectorClicksHandler( point, "click" ) );
+
+        selector.on( "doubleClick", point =>
+            selectorClicksHandler( point, "doubleClick" )
+        );
+
+        selector.on( "select", () => {
+            this.selectSlot( { ...this.state, action: "select" } );
+            this._initial = {};
+            this.setState( { selecting: false } );
+            notify( this.props.onSelectEnd, [ this.state ] );
+        } );
+    };
+
+    teardownSelectable = () => {
+        if ( !this.selector ) {
+            return;
+        }
+        this.selector.teardown();
+        this.selector = null;
+    };
+
+    selectSlot = ( { endIdx, startIdx, action } ) => {
+        if ( endIdx !== -1 && startIdx !== -1 ) {
+            this.props.onSelectSlot &&
+            this.props.onSelectSlot( {
+                start: startIdx,
+                end: endIdx,
+                action
+            } );
+        }
+    };
 
     render () {
         const { range, cellWrapperComponent: Wrapper, dayPropGetter, date: currentDate } = this.props;
 
         return (
-            <div className={ css.rbcRowBg }>
+            <div className={ css.rbcRowBg } ref={ this.node }>
                 { range.map( ( date, index ) => {
                     const { className, style: dayStyles } = ( dayPropGetter && dayPropGetter( date )) || {};
                     const segmStyles = segStyle( 1, range.length );
@@ -65,107 +166,6 @@ class BackgroundCells extends React.Component {
                 } )}
             </div>
         );
-    }
-
-    _selectable () {
-        const node = findDOMNode( this );
-        const selector = ( this._selector = new Selection( this.props.container, {
-            longPressThreshold: this.props.longPressThreshold
-        }));
-
-        const selectorClicksHandler = ( point, actionType ) => {
-            if ( !isEvent( findDOMNode( this ), point ) ) {
-                const rowBox = getBoundsForNode( node );
-                const { range, rtl } = this.props;
-
-                if ( pointInBox( rowBox, point ) ) {
-                    const width = slotWidth( getBoundsForNode( node ), range.length );
-                    const currentCell = getCellAtX(
-                        rowBox,
-                        point.x,
-                        width,
-                        rtl,
-                        range.length
-                    );
-
-                    this._selectSlot({
-                        startIdx: currentCell,
-                        endIdx: currentCell,
-                        action: actionType,
-                    });
-                }
-            }
-
-            this._initial = {};
-            this.setState( { selecting: false } );
-        };
-
-        selector.on( "selecting", box => {
-            const { range, rtl } = this.props;
-
-            let startIdx = -1;
-            let endIdx = -1;
-
-            if ( !this.state.selecting ) {
-                notify( this.props.onSelectStart, [ box ] );
-                this._initial = { x: box.x, y: box.y };
-            }
-            if ( selector.isSelected( node ) ) {
-                const nodeBox = getBoundsForNode( node );
-                ({ startIdx, endIdx } = dateCellSelection(
-                    this._initial,
-                    nodeBox,
-                    box,
-                    range.length,
-                    rtl
-                ));
-            }
-
-            this.setState( {
-                selecting: true,
-                startIdx,
-                endIdx
-            } );
-        } );
-
-        selector.on( "beforeSelect", box => {
-            if ( this.props.selectable !== "ignoreEvents" ) {
-                return;
-            }
-            return !isEvent( findDOMNode( this ), box );
-        } );
-
-        selector.on( "click", point => selectorClicksHandler( point, "click" ) );
-
-        selector.on( "doubleClick", point =>
-            selectorClicksHandler( point, "doubleClick" )
-        );
-
-        selector.on( "select", () => {
-            this._selectSlot( { ...this.state, action: "select" } );
-            this._initial = {};
-            this.setState( { selecting: false } );
-            notify( this.props.onSelectEnd, [ this.state ] );
-        } );
-    }
-
-    _teardownSelectable () {
-        if ( !this._selector ) {
-            return;
-        }
-        this._selector.teardown();
-        this._selector = null;
-    }
-
-    _selectSlot ( { endIdx, startIdx, action } ) {
-        if ( endIdx !== -1 && startIdx !== -1 ) {
-            this.props.onSelectSlot &&
-            this.props.onSelectSlot( {
-                start: startIdx,
-                end: endIdx,
-                action
-            } );
-        }
     }
 
 }
