@@ -77,7 +77,7 @@ const EventEndingRow = props => {
 
             row.push(
                 EventRowMixin.renderSpan(
-                    this.props,
+                    props,
                     1,
                     key,
                     renderShowMore( segments, current )
