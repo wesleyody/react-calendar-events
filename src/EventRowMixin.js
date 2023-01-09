@@ -1,6 +1,4 @@
 import PropTypes from "prop-types";
-import { findDOMNode } from "react-dom";
-import getHeight from "dom-helpers/height";
 
 import EventCell from "./EventCell";
 import { accessor, elementType } from "./utils/propTypes";
@@ -8,7 +6,6 @@ import { segStyle } from "./utils/eventLevels";
 import { isSelected } from "./utils/selection";
 import css from "./calendar.scss";
 
-/* eslint-disable react/prop-types */
 export default {
     propTypes: {
         adapter: PropTypes.object.isRequired,
@@ -89,9 +86,5 @@ export default {
             </div>
         );
     },
-
-    getRowHeight () {
-        getHeight( findDOMNode( this ) );
-    }
 
 };

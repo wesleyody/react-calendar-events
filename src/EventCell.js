@@ -1,5 +1,4 @@
 import PropTypes from "prop-types";
-import React from "react";
 import cn from "classnames";
 
 import dates from "./utils/dates";
@@ -28,76 +27,73 @@ const propTypes = {
     onDoubleClick: PropTypes.func.isRequired
 };
 
-class EventCell extends React.Component {
+const EventCell = ({
+    adapter,
+    className,
+    event,
+    selected,
+    isAllDay,
+    eventPropGetter,
+    startAccessor,
+    endAccessor,
+    titleAccessor,
+    tooltipAccessor,
+    slotStart,
+    slotEnd,
+    onSelect,
+    onDoubleClick,
+    eventComponent: Event,
+    eventWrapperComponent: EventWrapper,
+    ...props
+}) => {
+    const title = get( event, titleAccessor );
+    const tooltip = get( event, tooltipAccessor );
+    const end = get( event, endAccessor );
+    const start = get( event, startAccessor );
+    const isAllDayEvent = isAllDay ||
+        get( event, props.allDayAccessor ) ||
+        dates.diff( start, dates.ceil( end, "day" ), "day" ) > 1;
+    const continuesPrior = dates.lt( start, slotStart, "day" );
+    const continuesAfter = dates.gte( end, slotEnd, "day" );
 
-    render () {
-        const {
-            adapter,
-            className,
-            event,
-            selected,
-            isAllDay,
-            eventPropGetter,
-            startAccessor,
-            endAccessor,
-            titleAccessor,
-            tooltipAccessor,
-            slotStart,
-            slotEnd,
-            onSelect,
-            onDoubleClick,
-            eventComponent: Event,
-            eventWrapperComponent: EventWrapper,
-            ...props
-        } = this.props;
+    const { style, className: xClassName } = eventPropGetter && eventPropGetter(
+        event,
+        start,
+        end,
+        selected
+    );
+    const styleContainer = isAllDayEvent ? style : {};
+    const styleEvent = isAllDayEvent ? {} : style;
 
-        const title = get( event, titleAccessor );
-        const tooltip = get( event, tooltipAccessor );
-        const end = get( event, endAccessor );
-        const start = get( event, startAccessor );
-        const isAllDayEvent = isAllDay ||
-                get( event, props.allDayAccessor ) ||
-                dates.diff( start, dates.ceil( end, "day" ), "day" ) > 1;
-        const continuesPrior = dates.lt( start, slotStart, "day" );
-        const continuesAfter = dates.gte( end, slotEnd, "day" );
+    const handleSelect = e => onSelect( event, e );
+    const handleDoubleClick = e => onDoubleClick( event, e );
 
-        const { style, className: xClassName } = eventPropGetter && eventPropGetter(
-            event,
-            start,
-            end,
-            selected
-        );
-        const styleContainer = isAllDayEvent ? style : {};
-        const styleEvent = isAllDayEvent ? {} : style;
-
-        return (
-            <EventWrapper event={ event }>
-                <div
-                    style={{ ...props.style, ...styleContainer }}
-                    className={ cn( css.rbcEvent, className, xClassName,
-                        isAllDayEvent ? css.rbcEventAllday : "",
-                        continuesPrior ? css.rbcEventContinuesPrior : "",
-                        continuesAfter ? css.rbcEventContinuesAfter : ""
-                    )}
-                    onClick={ e => onSelect( event, e )}
-                    onDoubleClick={ e => onDoubleClick( event, e )}
-                >
-                    {
-                        Event ?
-                            <Event event={ event } title={ title } isAllDay={ isAllDayEvent }/> :
-                            isAllDayEvent ?
-                                <span title={ tooltip }>{ title }</span> :
-                                <div className={ css.rbcEventContent } title={ tooltip }>
-                                    <div className={ css.rbcEventHour } style={ styleEvent }></div>
-                                    { adapter.format( event.start, "HH:mm" ) + " " + title }
-                                </div>
-                    }
-                </div>
-            </EventWrapper>
-        );
-    }
-
-}
+    return (
+        <EventWrapper event={ event }>
+            <div
+                style={{ ...props.style, ...styleContainer }}
+                className={ cn( css.rbcEvent, className, xClassName,
+                    isAllDayEvent ? css.rbcEventAllday : "",
+                    continuesPrior ? css.rbcEventContinuesPrior : "",
+                    continuesAfter ? css.rbcEventContinuesAfter : ""
+                )}
+                onClick={ handleSelect }
+                onDoubleClick={ handleDoubleClick }
+            >
+                {
+                    Event ?
+                        <Event event={ event } title={ title } isAllDay={ isAllDayEvent }/> :
+                        isAllDayEvent ?
+                            <span title={ tooltip }>{ title }</span> :
+                            <div className={ css.rbcEventContent } title={ tooltip }>
+                                <div className={ css.rbcEventHour } style={ styleEvent } />
+                                { adapter.format( event.start, "HH:mm" ) + " " + title }
+                            </div>
+                }
+            </div>
+        </EventWrapper>
+    );
+};
 
 EventCell.propTypes = propTypes;
 

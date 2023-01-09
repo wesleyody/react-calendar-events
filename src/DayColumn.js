@@ -1,6 +1,5 @@
 import PropTypes from "prop-types";
 import React from "react";
-import { findDOMNode } from "react-dom";
 import cn from "classnames";
 
 import Selection, { getBoundsForNode, isEvent } from "./Selection";
@@ -25,75 +24,180 @@ function startsAfter ( date, max ) {
     return dates.gt( dates.merge( max, date ), max, "minutes" );
 }
 
-class DayColumn extends React.Component {
+function minToDate ( min, date ) {
+    let dt = new Date( date );
+    const totalMins = dates.diff( dates.startOf( date, "day" ), date, "minutes" );
 
-    state = { selecting: false };
+    dt = dates.hours( dt, 0 );
+    dt = dates.minutes( dt, totalMins + min );
+    dt = dates.seconds( dt, 0 );
+    return dates.milliseconds( dt, 0 );
+}
+
+class DayColumn extends React.PureComponent {
+
+    constructor ( props, context ) {
+        super( props, context );
+
+        this.state = {
+            selecting: false,
+            selector: null,
+            totalMin: dates.diff( props.min, props.max, "minutes" ),
+            initialDateSlot: null,
+        };
+
+        this.container = React.createRef();
+    }
 
     componentDidMount () {
-        this.props.selectable && this._selectable();
+        this.props.selectable && this.selectable();
     }
 
     componentWillUnmount () {
-        this._teardownSelectable();
+        this.teardownSelectable();
     }
 
     componentDidUpdate ( prevProps ) {
         if ( this.props.selectable && !prevProps.selectable ) {
-            this._selectable();
+            this.selectable();
         }
         if ( !this.props.selectable && prevProps.selectable ) {
-            this._teardownSelectable();
+            this.teardownSelectable();
+        }
+        if ( this.props.min !== prevProps.in || this.props.max !== prevProps.max ) {
+            this.setState({ totalMin: dates.diff( this.props.min, this.props.max, "minutes" ) });
         }
     }
 
-    render () {
-        const {
-            adapter,
-            getNow,
-            min,
-            max,
-            step,
-            selectRangeFormat,
-            dayPropGetter,
-            ...props
-        } = this.props;
+    slotStyle = ( startSlot, endSlot ) => {
+        const top = startSlot / this.state.totalMin * 100;
+        const bottom = endSlot / this.state.totalMin * 100;
 
-        this._totalMin = dates.diff( min, max, "minutes" );
-        const { selecting, startSlot, endSlot } = this.state;
-        const slotStyle = this._slotStyle( startSlot, endSlot );
+        return {
+            top: top + "%",
+            height: bottom - top + "%",
+        };
+    };
 
-        const selectDates = {
-            start: this.state.startDate,
-            end: this.state.endDate,
+    selectable = () => {
+        const selector = new Selection( () => this.container.current, {
+            longPressThreshold: this.props.longPressThreshold,
+        } );
+        this.setState({ selector });
+
+        const maybeSelect = box => {
+            const onSelecting = this.props.onSelecting;
+            const current = this.state || {};
+            const state = selectionState( box );
+            const { startDate: start, endDate: end } = state;
+
+            if ( onSelecting ) {
+                if ( ( dates.eq( current.startDate, start, "minutes" ) &&
+                    dates.eq( current.endDate, end, "minutes" )) ||
+                    !onSelecting( { start, end } )
+                ) {
+                    return;
+                }
+            }
+
+            this.setState( state );
         };
 
-        const { className, style } = ( dayPropGetter && dayPropGetter( max )) || {};
+        const selectionState = ( { y } ) => {
+            const { step, min, max } = this.props;
+            const { top, bottom } = getBoundsForNode( this.container.current );
 
-        return (
-            <TimeColumn
-                { ...props }
-                adapter={ adapter }
-                className={ cn(
-                    css.rbcDaySlot,
-                    className
-                )}
-                style={ style }
-                getNow={ getNow }
-                min={ min }
-                max={ max }
-                step={ step }
-            >
-                <div className={ cn( css.rbcEventsContainer, { rtl: this.props.rtl } )}>
-                    { this.renderEvents() }
-                </div>
-                { selecting && (
-                    <div className={ css.rbcSlotSelection } style={ slotStyle }>
-                        <span>{ selectRangeFormat( adapter, selectDates )}</span>
-                    </div>
-                )}
-            </TimeColumn>
-        );
-    }
+            const mins = this.state.totalMin;
+
+            const range = Math.abs( top - bottom );
+
+            let current = ( y - top ) / range;
+            current = snapToSlot( minToDate( mins * current, min ), step );
+
+            let initial;
+            if ( !this.state.selecting ) {
+                initial = current;
+                this.setState({ initialDateSlot: current });
+            } else {
+                initial = this.state.initialDateSlot;
+            }
+
+            if ( dates.eq( initial, current, "minutes" ) ) {
+                current = dates.add( current, step, "minutes" );
+            }
+
+            const start = dates.max( min, dates.min( initial, current ) );
+            const end = dates.min( max, dates.max( initial, current ) );
+
+            return {
+                selecting: true,
+                startDate: start,
+                endDate: end,
+                startSlot: positionFromDate( start, min, this.state.totalMin ),
+                endSlot: positionFromDate( end, min, this.state.totalMin )
+            };
+        };
+
+        const selectorClicksHandler = ( box, actionType ) => {
+            if ( !isEvent( this.container.current, box ) ) {
+                this.selectSlot( { ...selectionState( box ), action: actionType } );
+            }
+
+            this.setState( { selecting: false } );
+        };
+
+        selector.on( "selecting", maybeSelect );
+        selector.on( "selectStart", maybeSelect );
+
+        selector.on( "beforeSelect", box => {
+            if ( this.props.selectable !== "ignoreEvents" ) {
+                return;
+            }
+
+            return !isEvent( this.container.current, box );
+        } );
+
+        selector.on( "click", box => selectorClicksHandler( box, "click" ) );
+
+        selector.on( "doubleClick", box => selectorClicksHandler( box, "doubleClick" ) );
+
+        selector.on( "select", () => {
+            if ( this.state.selecting ) {
+                this.selectSlot( { ...this.state, action: "select" } );
+                this.setState( { selecting: false } );
+            }
+        } );
+    };
+
+    teardownSelectable = () => {
+        if ( !this.state.selector ) {
+            return;
+        }
+        this.state.selector.teardown();
+        this.setState({ selector: null });
+    };
+
+    selectSlot = ( { startDate, endDate, action } ) => {
+        let current = startDate;
+        const slots = [];
+
+        while ( dates.lte( current, endDate ) ) {
+            slots.push( current );
+            current = dates.add( current, this.props.step, "minutes" );
+        }
+
+        notify( this.props.onSelectSlot, {
+            slots,
+            start: startDate,
+            end: endDate,
+            resourceId: this.props.resource,
+            action
+        } );
+    };
+
+    handleSelect = event => e => notify( this.props.onSelectEvent, event, e );
+
+    handleDoubleClick = event => e => notify( this.props.onDoubleClickEvent, event, e );
 
     renderEvents = () => {
         const {
@@ -125,28 +229,28 @@ class DayColumn extends React.Component {
             endAccessor,
             min,
             showMultiDayTimes,
-            totalMin: this._totalMin,
+            totalMin: this.state.totalMin,
             step,
             timeslots
         } );
 
         return styledEvents.map( ( { event, style }, idx ) => {
-            let _eventTimeRangeFormat = eventTimeRangeFormat;
-            let _continuesPrior = false;
-            let _continuesAfter = false;
+            let eventFormat = eventTimeRangeFormat;
+            let continuesDayPrior = false;
+            let continuesDayAfter = false;
             let start = get( event, startAccessor );
             let end = get( event, endAccessor );
 
             if ( start < min ) {
                 start = min;
-                _continuesPrior = true;
-                _eventTimeRangeFormat = eventTimeRangeEndFormat;
+                continuesDayPrior = true;
+                eventFormat = eventTimeRangeEndFormat;
             }
 
             if ( end > max ) {
                 end = max;
-                _continuesAfter = true;
-                _eventTimeRangeFormat = eventTimeRangeStartFormat;
+                continuesDayAfter = true;
+                eventFormat = eventTimeRangeStartFormat;
             }
 
             const continuesPrior = startsBefore( start, min );
@@ -155,18 +259,17 @@ class DayColumn extends React.Component {
             const title = get( event, titleAccessor );
             const tooltip = get( event, tooltipAccessor );
             let label;
-            if ( _continuesPrior && _continuesAfter ) {
+            if ( continuesDayPrior && continuesDayAfter ) {
                 label = messages.allDay;
             } else {
-                label = _eventTimeRangeFormat( adapter, { start, end } );
+                label = eventFormat( adapter, { start, end } );
             }
 
-            const _isSelected = isSelected( event, selected );
             const { style: xStyle, className } = eventPropGetter && eventPropGetter(
                 event,
                 start,
                 end,
-                _isSelected
+                isSelected( event, selected )
             );
             const { height, top, width, xOffset } = style;
 
@@ -185,13 +288,13 @@ class DayColumn extends React.Component {
                                 ? ( typeof label === "string" ? label + ": " : "" ) + tooltip
                                 : undefined
                         }
-                        onClick={ e => this._select( event, e ) }
-                        onDoubleClick={ e => this._doubleClick( event, e ) }
+                        onClick={ this.handleSelect( event ) }
+                        onDoubleClick={ this.handleDoubleClick( event ) }
                         className={ cn( css.rbcEvent, className,
                             continuesPrior ? css.rbcEventContinuesEarlier : "",
                             continuesAfter ? css.rbcEventContinuesLater : "",
-                            _continuesPrior ? css.rbcEventContinuesDayPrior : "",
-                            _continuesAfter ? css.rbcEventContinuesDayAfter : ""
+                            continuesDayPrior ? css.rbcEventContinuesDayPrior : "",
+                            continuesDayAfter ? css.rbcEventContinuesDayAfter : ""
                         )}
                     >
                         <div className={ css.rbcEventLabel }>{ label }</div>
@@ -207,148 +310,55 @@ class DayColumn extends React.Component {
         } );
     };
 
-    _slotStyle = ( startSlot, endSlot ) => {
-        const top = startSlot / this._totalMin * 100;
-        const bottom = endSlot / this._totalMin * 100;
+    render () {
+        const {
+            adapter,
+            getNow,
+            min,
+            max,
+            step,
+            selectRangeFormat,
+            dayPropGetter,
+            ...props
+        } = this.props;
 
-        return {
-            top: top + "%",
-            height: bottom - top + "%",
-        };
-    };
+        const { selecting, startSlot, endSlot } = this.state;
+        const slotStyle = this.slotStyle( startSlot, endSlot );
 
-    _selectable = () => {
-        const node = findDOMNode( this );
-        const selector = (this._selector = new Selection( () => findDOMNode( this ), {
-            longPressThreshold: this.props.longPressThreshold,
-        } ));
-
-        const maybeSelect = box => {
-            const onSelecting = this.props.onSelecting;
-            const current = this.state || {};
-            const state = selectionState( box );
-            const { startDate: start, endDate: end } = state;
-
-            if ( onSelecting ) {
-                if ( ( dates.eq( current.startDate, start, "minutes" ) &&
-                    dates.eq( current.endDate, end, "minutes" )) ||
-                    !onSelecting( { start, end } )
-                ) {
-                    return;
-                }
-            }
-
-            this.setState( state );
+        const selectDates = {
+            start: this.state.startDate,
+            end: this.state.endDate,
         };
 
-        const selectionState = ( { y } ) => {
-            const { step, min, max } = this.props;
-            const { top, bottom } = getBoundsForNode( node );
+        const { className, style } = ( dayPropGetter && dayPropGetter( max )) || {};
 
-            const mins = this._totalMin;
-
-            const range = Math.abs( top - bottom );
-
-            let current = ( y - top ) / range;
-            current = snapToSlot( minToDate( mins * current, min ), step );
-
-            if ( !this.state.selecting ) {
-                this._initialDateSlot = current;
-            }
-
-            const initial = this._initialDateSlot;
-
-            if ( dates.eq( initial, current, "minutes" ) ) {
-                current = dates.add( current, step, "minutes" );
-            }
-
-            const start = dates.max( min, dates.min( initial, current ) );
-            const end = dates.min( max, dates.max( initial, current ) );
-
-            return {
-                selecting: true,
-                startDate: start,
-                endDate: end,
-                startSlot: positionFromDate( start, min, this._totalMin ),
-                endSlot: positionFromDate( end, min, this._totalMin )
-            };
-        };
-
-        const selectorClicksHandler = ( box, actionType ) => {
-            if ( !isEvent( findDOMNode( this ), box ) ) {
-                this._selectSlot( { ...selectionState( box ), action: actionType } );
-            }
-
-            this.setState( { selecting: false } );
-        };
-
-        selector.on( "selecting", maybeSelect );
-        selector.on( "selectStart", maybeSelect );
-
-        selector.on( "beforeSelect", box => {
-            if ( this.props.selectable !== "ignoreEvents" ) {
-                return;
-            }
-
-            return !isEvent( findDOMNode( this ), box );
-        } );
-
-        selector.on( "click", box => selectorClicksHandler( box, "click" ) );
-
-        selector.on( "doubleClick", box => selectorClicksHandler( box, "doubleClick" ) );
-
-        selector.on( "select", () => {
-            if ( this.state.selecting ) {
-                this._selectSlot( { ...this.state, action: "select" } );
-                this.setState( { selecting: false } );
-            }
-        } );
-    };
-
-    _teardownSelectable = () => {
-        if ( !this._selector ) {
-            return;
-        }
-        this._selector.teardown();
-        this._selector = null;
-    };
-
-    _selectSlot = ( { startDate, endDate, action } ) => {
-        let current = startDate;
-        const slots = [];
-
-        while ( dates.lte( current, endDate ) ) {
-            slots.push( current );
-            current = dates.add( current, this.props.step, "minutes" );
-        }
-
-        notify( this.props.onSelectSlot, {
-            slots,
-            start: startDate,
-            end: endDate,
-            resourceId: this.props.resource,
-            action
-        } );
-    };
-
-    _select = ( ...args ) => {
-        notify( this.props.onSelectEvent, args );
-    };
-
-    _doubleClick = ( ...args ) => {
-        notify( this.props.onDoubleClickEvent, args );
+        return (
+            <TimeColumn
+                { ...props }
+                ref={ this.container }
+                adapter={ adapter }
+                className={ cn(
+                    css.rbcDaySlot,
+                    className
+                )}
+                style={ style }
+                getNow={ getNow }
+                min={ min }
+                max={ max }
+                step={ step }
+            >
+                <div className={ cn( css.rbcEventsContainer, { rtl: this.props.rtl } )}>
+                    { this.renderEvents() }
+                </div>
+                { selecting && (
+                    <div className={ css.rbcSlotSelection } style={ slotStyle }>
+                        <span>{ selectRangeFormat( adapter, selectDates )}</span>
+                    </div>
+                )}
+            </TimeColumn>
+        );
     }
 
-}
-
-function minToDate ( min, date ) {
-    let dt = new Date( date );
-    const totalMins = dates.diff( dates.startOf( date, "day" ), date, "minutes" );
-
-    dt = dates.hours( dt, 0 );
-    dt = dates.minutes( dt, totalMins + min );
-    dt = dates.seconds( dt, 0 );
-    return dates.milliseconds( dt, 0 );
 }
 
 DayColumn.propTypes = {

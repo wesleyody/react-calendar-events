@@ -24,10 +24,21 @@ const propTypes = {
     eventWrapperComponent: elementType,
     dayHeaderFormat: dateFormat
 };
-class Popup extends React.Component {
 
-    componentDidMount () {
-        const { popperRef, popupOffset = 5 } = this.props;
+const Popup = ({
+    events,
+    selected,
+    eventComponent,
+    eventWrapperComponent,
+    popperRef,
+    position,
+    popupOffset = 5,
+    ...props
+}) => {
+    const [ topOffset, setTopOffset ] = React.useState( 0 );
+    const [ leftOffset, setLeftOffset ] = React.useState( 0 );
+
+    React.useEffect( () => {
         const { top, left, width, height } = getOffset( popperRef.current );
         const viewBottom = window.innerHeight + getScrollTop( window );
         const viewRight = window.innerWidth + getScrollLeft( window );
@@ -45,53 +56,40 @@ class Popup extends React.Component {
                 leftOffset = right - viewRight + (popupOffset.x || +popupOffset || 0);
             }
 
-            this.setState( { topOffset, leftOffset } );
+            setTopOffset( topOffset );
+            setLeftOffset( leftOffset );
         }
-    }
+    }, [ popperRef, popupOffset ] );
 
-    render () {
-        const {
-            events,
-            selected,
-            eventComponent,
-            eventWrapperComponent,
-            popperRef,
-            ...props
-        } = this.props;
+    const { left, width, top } = position;
 
-        const { left, width, top } = this.props.position;
-        const topOffset = ( this.state || {} ).topOffset || 0;
-        const leftOffset = ( this.state || {} ).leftOffset || 0;
+    const style = {
+        top: Math.max( 0, top - topOffset ),
+        left: left - leftOffset,
+        width: width + width
+    };
 
-        const style = {
-            top: Math.max( 0, top - topOffset ),
-            left: left - leftOffset,
-            width: width + width
-        };
-
-        return (
-            <div ref={ popperRef } style={ style } className={ css.rbcOverlay }>
-                <div className={ css.rbcOverlayHeader }>
-                    { props.adapter.format(
-                        props.slotStart,
-                        props.dayHeaderFormat,
-                    )}
-                </div>
-                { events.map( ( event, idx ) => (
-                    <EventCell
-                        key={ idx }
-                        { ...props }
-                        event={ event }
-                        eventComponent={ eventComponent }
-                        eventWrapperComponent={ eventWrapperComponent }
-                        selected={ isSelected( event, selected ) }
-                    />
-                ))}
+    return (
+        <div ref={ popperRef } style={ style } className={ css.rbcOverlay }>
+            <div className={ css.rbcOverlayHeader }>
+                { props.adapter.format(
+                    props.slotStart,
+                    props.dayHeaderFormat,
+                )}
             </div>
-        );
-    }
-
-}
+            { events.map( ( event, idx ) => (
+                <EventCell
+                    key={ idx }
+                    { ...props }
+                    event={ event }
+                    eventComponent={ eventComponent }
+                    eventWrapperComponent={ eventWrapperComponent }
+                    selected={ isSelected( event, selected ) }
+                />
+            ))}
+        </div>
+    );
+};
 
 Popup.propTypes = propTypes;
 

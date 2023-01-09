@@ -1,19 +1,13 @@
 import PropTypes from "prop-types";
-import React from "react";
 import dates from "./utils/dates";
 import { navigate } from "./utils/constants";
 import TimeGrid from "./TimeGrid";
 
-class Week extends React.Component {
+const Week = ({ date, ...props }) => {
+    const range = Week.range( date, props );
 
-    render () {
-        const { date, ...props } = this.props;
-        const range = Week.range( date, this.props );
-
-        return <TimeGrid { ...props } range={ range } eventOffset={ 15 }/>;
-    }
-
-}
+    return <TimeGrid { ...props } range={ range } eventOffset={ 15 } />;
+};
 
 Week.navigate = ( date, action ) => {
     switch ( action ) {

@@ -1,9 +1,8 @@
 import PropTypes from "prop-types";
 import React from "react";
 import Overlay from "react-overlays/Overlay";
-import { findDOMNode } from "react-dom";
 import getPosition from "dom-helpers/position";
-import raf from "dom-helpers/animationFrame";
+import * as raf from "dom-helpers/animationFrame";
 import chunk from "lodash/chunk";
 import omit from "lodash/omit";
 import cn from "classnames";
@@ -77,99 +76,59 @@ const propTypes = {
     ] )
 };
 
-class MonthView extends React.Component {
+const MonthView = props => {
+    const {
+        date,
+        culture,
+        dateFormat,
+        weekdayFormat,
+        className,
+        startAccessor,
+        endAccessor,
+        adapter,
+        components,
+        selectable,
+        titleAccessor,
+        tooltipAccessor,
+        allDayAccessor,
+        getNow,
+        eventPropGetter,
+        dayPropGetter,
+        messages,
+        selected,
+        longPressThreshold,
+        getDrilldownView,
+        onDrillDown,
+        onSelectEvent,
+        onDoubleClickEvent,
+        onSelectSlot,
+        onShowMore,
+        popup,
+    } = props;
 
-    constructor ( ...args ) {
-        super( ...args );
+    const monthView = React.useRef();
+    const slotRow = React.useRef();
 
-        this.monthView = React.createRef();
-        this._pendingSelection = [];
-        this.state = {
-            rowLimit: 5,
-            needLimitMeasure: true
-        };
-    }
+    const [ pendingSelection, setPendingSelection ] = React.useState( [] );
+    const [ rowLimit, setRowLimit ] = React.useState( 5 );
+    const [ needLimitMeasure, setNeedLimitMeasure ] = React.useState( true );
+    const [ overlay, setOverlay ] = React.useState( {} );
+    const [ selectTimer, setSelectTimer ] = React.useState();
 
-    componentDidMount () {
-        this.measureRowLimit( this.props );
+    const renderWeek = ( week, weekIdx ) => {
+        let { events } = props;
 
-        let running;
-        window.addEventListener(
-            "resize",
-            ( this._resizeListener = () => {
-                if ( !running ) {
-                    raf.request( () => {
-                        running = false;
-                        this.setState( { needLimitMeasure: true } ) ;
-                    } );
-                }
-            }),
-            false
-        );
-    }
+        events = eventsForWeek( events, week[ 0 ], week[ week.length - 1 ], { startAccessor, endAccessor } );
+        events.sort( ( a, b ) => sortEvents( a, b, startAccessor, endAccessor, allDayAccessor ) );
 
-    componentDidUpdate () {
-        if ( this.state.needLimitMeasure ) {
-            this.measureRowLimit( this.props );
-        }
-    }
-
-    componentWillUnmount () {
-        window.removeEventListener( "resize", this._resizeListener, false );
-    }
-
-    getContainer = () => {
-        return findDOMNode( this );
-    };
-
-    render () {
-        const { date, culture, weekdayFormat, className } = this.props;
-        const month = dates.visibleDays( date, culture );
-        const weeks = chunk( month, 7 );
-
-        this._weekCount = weeks.length;
-
-        return (
-            <div ref={ this.monthView } className={ cn( css.rbcMonthView, className )}>
-                <div className={ cn( css.rbcRow, css.rbcMonthHeader )}>
-                    { this.renderHeaders( weeks[ 0 ], weekdayFormat, culture ) }
-                </div>
-                { weeks.map( this.renderWeek ) }
-                { this.props.popup && this.renderOverlay() }
-            </div>
-        );
-    }
-
-    renderWeek = ( week, weekIdx ) => {
-        const {
-            adapter,
-            components,
-            selectable,
-            titleAccessor,
-            tooltipAccessor,
-            startAccessor,
-            endAccessor,
-            allDayAccessor,
-            getNow,
-            eventPropGetter,
-            dayPropGetter,
-            messages,
-            selected,
-            date,
-            longPressThreshold
-        } = this.props;
-        let { events } = this.props;
-        const { needLimitMeasure, rowLimit } = this.state;
-
-        events = eventsForWeek( events, week[ 0 ], week[ week.length - 1 ], this.props );
-        events.sort( ( a, b ) => sortEvents( a, b, this.props ) );
+        const container = () => monthView.current;
 
         return (
             <DateContentRow
                 key={ weekIdx }
-                ref={ weekIdx === 0 ? "slotRow" : undefined }
+                ref={ weekIdx === 0 ? slotRow : undefined }
                 adapter={ adapter }
-                container={ this.getContainer }
+                container={ container }
                 className={ css.rbcMonthRow }
                 getNow={ getNow }
                 date={ date }
@@ -186,12 +145,12 @@ class MonthView extends React.Component {
                 allDayAccessor={ allDayAccessor }
                 eventPropGetter={ eventPropGetter }
                 dayPropGetter={ dayPropGetter }
-                renderHeader={ this.readerDateHeading }
+                renderHeader={ readerDateHeading }
                 renderForMeasure={ needLimitMeasure }
-                onShowMore={ this.handleShowMore }
-                onSelect={ this.handleSelectEvent }
-                onDoubleClick={ this.handleDoubleClickEvent }
-                onSelectSlot={ this.handleSelectSlot }
+                onShowMore={ handleShowMore }
+                onSelect={ handleSelectEvent }
+                onDoubleClick={ handleDoubleClickEvent }
+                onSelectSlot={ handleSelectSlot }
                 eventComponent={ components.event }
                 eventWrapperComponent={ components.eventWrapper }
                 dateCellWrapper={ components.dateCellWrapper }
@@ -200,23 +159,16 @@ class MonthView extends React.Component {
         );
     };
 
-    readerDateHeading = ( { date, className, ...props } ) => {
-        const {
-            adapter,
-            date: currentDate,
-            getDrilldownView,
-            dateFormat,
-        } = this.props;
-
-        const isOffRange = dates.month( date ) !== dates.month( currentDate );
-        const isCurrent = dates.eq( date, currentDate, "day" );
-        const drilldownView = getDrilldownView( date );
-        const label = adapter.format( date, dateFormat );
-        const DateHeaderComponent = this.props.components.dateHeader || DateHeader;
+    const readerDateHeading = ( { date: dateHeading, className, ...props } ) => {
+        const isOffRange = dates.month( dateHeading ) !== dates.month( date );
+        const isCurrent = dates.eq( dateHeading, date, "day" );
+        const drilldownView = getDrilldownView( dateHeading );
+        const label = adapter.format( dateHeading, dateFormat );
+        const DateHeaderComponent = components.dateHeader || DateHeader;
 
         return (
             <div
-                {...props}
+                { ...props }
                 className={ cn(
                     className,
                     isOffRange && css.rbcOffRange,
@@ -225,20 +177,19 @@ class MonthView extends React.Component {
             >
                 <DateHeaderComponent
                     label={ label }
-                    date={ date }
+                    date={ dateHeading }
                     drilldownView= {drilldownView }
                     isOffRange={ isOffRange }
-                    onDrillDown={ e => this.handleHeadingClick( date, drilldownView, e ) }
+                    onDrillDown={ e => handleHeadingClick( dateHeading, drilldownView, e ) }
                 />
             </div>
         );
     };
 
-    renderHeaders ( row, format, culture ) {
+    const renderHeaders = ( row, format, culture ) => {
         const first = row[ 0 ];
         const last = row[ row.length - 1 ];
-        const HeaderComponent = this.props.components.header || Header;
-        const { adapter } = this.props;
+        const HeaderComponent = components.header || Header;
 
         return dates.range( first, last, "day" ).map( ( day, idx ) => (
             <div key={ "header_" + idx } className={ css.rbcHeader } style={ segStyle( 1, 7 ) }>
@@ -250,83 +201,92 @@ class MonthView extends React.Component {
                 />
             </div>
         ) );
-    }
+    };
 
-    renderOverlay () {
-        const overlay = (this.state && this.state.overlay) || {};
-        const { components } = this.props;
-
+    const renderOverlay = () => {
+        const onHide = () => setOverlay( {} );
+        const onTarget = () => overlay.target;
         return (
             <Overlay
                 rootClose
                 placement="bottom"
-                container={ this.monthView }
+                container={ monthView }
                 show={ !!overlay.position }
-                onHide={ () => this.setState( { overlay: null } ) }
-                target={ () => overlay.target }
+                onHide={ onHide }
+                target={ onTarget }
             >
                 {
-                    ({ props }) => (
+                    ({ props: renderProps }) => (
                         <Popup
-                            { ...omit( props, "style" ) }
-                            { ...this.props }
+                            { ...omit( renderProps, "style" ) }
+                            { ...props }
                             eventComponent={ components.event }
                             eventWrapperComponent={ components.eventWrapper }
                             position={ overlay.position }
                             events={ overlay.events }
                             slotStart={ overlay.date }
                             slotEnd={ overlay.end }
-                            onSelect={ this.handleSelectEvent }
-                            onDoubleClick={ this.handleDoubleClickEvent }
+                            onSelect={ handleSelectEvent }
+                            onDoubleClick={ handleDoubleClickEvent }
                         />
                     )
                 }
 
             </Overlay>
         );
-    }
-
-    measureRowLimit () {
-        this.setState( {
-            needLimitMeasure: false,
-            rowLimit: this.refs.slotRow.getRowLimit()
-        } );
-    }
-
-    handleSelectSlot = ( range, slotInfo ) => {
-        this._pendingSelection = this._pendingSelection.concat( range );
-
-        clearTimeout( this._selectTimer );
-        this._selectTimer = setTimeout( () => this.selectDates( slotInfo ) );
     };
 
-    handleHeadingClick = ( date, view, e ) => {
+    const measureRowLimit = () => {
+        setNeedLimitMeasure( false );
+        setRowLimit( slotRow.current.getRowLimit() );
+    };
+
+    const handleSelectSlot = ( range, slotInfo ) => {
+        const newPendingSelection = pendingSelection.concat( range );
+        setPendingSelection( newPendingSelection );
+
+        const selectDates = slotInfo => {
+            const slots = newPendingSelection.slice();
+            setPendingSelection( [] );
+
+            slots.sort( ( a, b ) => +a - +b );
+
+            notify( onSelectSlot, {
+                slots,
+                start: slots[ 0 ],
+                end: slots[ slots.length - 1 ],
+                action: slotInfo.action
+            } );
+        };
+
+        clearTimeout( selectTimer );
+        setSelectTimer( setTimeout( () => selectDates( slotInfo ) ) );
+    };
+
+    const handleHeadingClick = ( date, view, e ) => {
         e.preventDefault();
-        this.clearSelection();
-        notify( this.props.onDrillDown, [ date, view ] );
+        clearSelection();
+        notify( onDrillDown, [ date, view ] );
     };
 
-    handleSelectEvent = ( ...args ) => {
-        this.clearSelection();
-        notify( this.props.onSelectEvent, args );
+    const handleSelectEvent = ( ...args ) => {
+        clearSelection();
+        notify( onSelectEvent, args );
     };
 
-    handleDoubleClickEvent = ( ...args ) => {
-        this.clearSelection();
-        notify( this.props.onDoubleClickEvent, args );
+    const handleDoubleClickEvent = ( ...args ) => {
+        clearSelection();
+        notify( onDoubleClickEvent, args );
     };
 
-    handleShowMore = ( events, date, cell, slot, target ) => {
-        const { popup, onDrillDown, onShowMore, getDrilldownView } = this.props;
+    const handleShowMore = ( events, date, cell, slot, target ) => {
         //cancel any pending selections so only the event click goes through.
-        this.clearSelection();
+        clearSelection();
 
         if ( popup ) {
-            const position = getPosition( cell, findDOMNode( this ) );
+            const position = getPosition( cell, monthView.current );
 
-            this.setState( {
-                overlay: { date, events, position, target },
-            } );
+            setOverlay({ date, events, position, target });
         } else {
             notify( onDrillDown, [ date, getDrilldownView( date ) || views.DAY ] );
         }
@@ -334,29 +294,50 @@ class MonthView extends React.Component {
         notify( onShowMore, [ events, date, slot ] );
     };
 
-    selectDates ( slotInfo ) {
-        const slots = this._pendingSelection.slice();
+    const clearSelection = () => {
+        clearTimeout( selectTimer );
+        setPendingSelection( [] );
+    };
 
-        this._pendingSelection = [];
-
-        slots.sort( ( a, b ) => +a - +b );
-
-        notify( this.props.onSelectSlot, {
-            slots,
-            start: slots[ 0 ],
-            end: slots[ slots.length - 1 ],
-            action: slotInfo.action
+    const resizeListener = React.useCallback( () => {
+        raf.request( () => {
+            setNeedLimitMeasure( true );
         } );
-    }
+    }, [] );
 
-    clearSelection () {
-        clearTimeout( this._selectTimer );
-        this._pendingSelection = [];
-    }
+    React.useEffect( () => {
+        measureRowLimit();
 
-}
+        window.addEventListener(
+            "resize",
+            resizeListener,
+            false
+        );
 
-MonthView.displayName = "MonthView";
+        return () => {
+            window.removeEventListener( "resize", resizeListener, false );
+        };
+    }, [ resizeListener ]);
+
+    React.useEffect( () => {
+        if ( needLimitMeasure ) {
+            measureRowLimit();
+        }
+    }, [ needLimitMeasure ] );
+
+    const month = dates.visibleDays( date, culture );
+    const weeks = chunk( month, 7 );
+
+    return (
+        <div ref={ monthView } className={ cn( css.rbcMonthView, className )}>
+            <div className={ cn( css.rbcRow, css.rbcMonthHeader )}>
+                { renderHeaders( weeks[ 0 ], weekdayFormat, culture ) }
+            </div>
+            { weeks.map( renderWeek ) }
+            { popup && renderOverlay() }
+        </div>
+    );
+};
 
 MonthView.navigate = ( date, action ) => {
     switch ( action ) {

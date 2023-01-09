@@ -1,39 +1,32 @@
 import PropTypes from "prop-types";
-import React from "react";
 
 import EventRowMixin from "./EventRowMixin";
 import css from "./calendar.scss";
 
-class EventRow extends React.Component {
+const EventRow = ({ segments, ...props }) => {
+    let lastEnd = 1;
 
-    render () {
-        const { segments } = this.props;
+    return (
+        <div className={ css.rbcRow }>
+            { segments.reduce( ( row, { event, left, right, span }, li ) => {
+                const key = "_lvl_" + li;
+                const gap = left - lastEnd;
 
-        let lastEnd = 1;
+                const content = EventRowMixin.renderEvent( props, event );
 
-        return (
-            <div className={ css.rbcRow }>
-                { segments.reduce( ( row, { event, left, right, span }, li ) => {
-                    const key = "_lvl_" + li;
-                    const gap = left - lastEnd;
+                if ( gap ) {
+                    row.push( EventRowMixin.renderSpan( props, gap, key + "_gap" ) );
+                }
 
-                    const content = EventRowMixin.renderEvent( this.props, event );
+                row.push( EventRowMixin.renderSpan( props, span, key, content ) );
 
-                    if ( gap ) {
-                        row.push( EventRowMixin.renderSpan( this.props, gap, key + "_gap" ) );
-                    }
+                lastEnd = right + 1;
 
-                    row.push( EventRowMixin.renderSpan( this.props, span, key, content ) );
-
-                    lastEnd = right + 1;
-
-                    return row;
-                }, [] )}
-            </div>
-        );
-    }
-
-}
+                return row;
+            }, [] )}
+        </div>
+    );
+};
 
 EventRow.propTypes = {
     segments: PropTypes.array,
