@@ -36,6 +36,7 @@ export default {
 
     renderEvent ( props, event ) {
         const {
+            adapter,
             eventPropGetter,
             selected,
             isAllDay,
@@ -54,6 +55,7 @@ export default {
 
         return (
             <EventCell
+                adapter={ adapter }
                 event={ event }
                 eventWrapperComponent={ eventWrapperComponent }
                 eventPropGetter={ eventPropGetter }
