@@ -10,6 +10,8 @@ import { elementType, dateFormat } from "./utils/propTypes";
 import css from "./calendar.scss";
 
 const propTypes = {
+    target: PropTypes.object,
+    onClose: PropTypes.func,
     position: PropTypes.object,
     popupOffset: PropTypes.oneOfType( [
         PropTypes.number,
@@ -30,16 +32,18 @@ const Popup = ({
     selected,
     eventComponent,
     eventWrapperComponent,
-    popperRef,
+    onClose,
+    target,
     position,
     popupOffset = 5,
     ...props
 }) => {
+    const container = React.useRef();
     const [ topOffset, setTopOffset ] = React.useState( 0 );
     const [ leftOffset, setLeftOffset ] = React.useState( 0 );
 
     React.useEffect( () => {
-        const { top, left, width, height } = getOffset( popperRef.current );
+        const { top, left, width, height } = getOffset( target.current );
         const viewBottom = window.innerHeight + getScrollTop( window );
         const viewRight = window.innerWidth + getScrollLeft( window );
         const bottom = top + height;
@@ -59,7 +63,19 @@ const Popup = ({
             setTopOffset( topOffset );
             setLeftOffset( leftOffset );
         }
-    }, [ popperRef, popupOffset ] );
+    }, [ target, popupOffset ] );
+
+    React.useEffect( () => {
+        const handleClickOutside = event => {
+            if ( container.current && !container.current.contains( event.target ) ) {
+                onClose();
+            }
+        };
+        document.addEventListener( "click", handleClickOutside, true );
+        return () => {
+            document.removeEventListener( "click", handleClickOutside, true );
+        };
+    }, [ onClose ]);
 
     const { left, width, top } = position;
 
@@ -70,7 +86,7 @@ const Popup = ({
     };
 
     return (
-        <div ref={ popperRef } style={ style } className={ css.rbcOverlay }>
+        <div ref={ container } style={ style } className={ css.rbcOverlay }>
             <div className={ css.rbcOverlayHeader }>
                 { props.adapter.format(
                     props.slotStart,
@@ -93,10 +109,6 @@ const Popup = ({
 
 Popup.propTypes = propTypes;
 
-/**
- * The Overlay component, of react-overlays, creates a ref that is passed to the Popup, and
- * requires proper ref forwarding to be used without error
- */
-export default React.forwardRef((props, ref) => (
-    <Popup popperRef={ref} {...props} />
+export default React.forwardRef( ( props, ref ) => (
+    <Popup ref={ ref } { ...props } />
 ));
