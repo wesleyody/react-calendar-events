@@ -69,7 +69,6 @@
     "invariant": "^2.1.0",
     "lodash": "^4.17.21",
     "prop-types": "^15.5.8",
-    "react-overlays": "^5.2.1",
     "react-prop-types": "^0.4.0",
     "uncontrollable": "^7.2.1"
   }

@@ -1,10 +1,8 @@
 import PropTypes from "prop-types";
 import React from "react";
-import Overlay from "react-overlays/Overlay";
 import getPosition from "dom-helpers/position";
 import * as raf from "dom-helpers/animationFrame";
 import chunk from "lodash/chunk";
-import omit from "lodash/omit";
 import cn from "classnames";
 
 import dates from "./utils/dates";
@@ -76,7 +74,7 @@ const propTypes = {
     ] )
 };
 
-const MonthView = props => {
+const MonthView = React.forwardRef( ( props, monthView ) => {
     const {
         date,
         culture,
@@ -106,7 +104,6 @@ const MonthView = props => {
         popup,
     } = props;
 
-    const monthView = React.useRef();
     const slotRow = React.useRef();
 
     const [ pendingSelection, setPendingSelection ] = React.useState( [] );
@@ -204,35 +201,24 @@ const MonthView = props => {
     };
 
     const renderOverlay = () => {
-        const onHide = () => setOverlay( {} );
-        const onTarget = () => overlay.target;
+        if ( !overlay.position ) {
+            return null;
+        }
+        const onClose = () => setOverlay( {} );
         return (
-            <Overlay
-                rootClose
-                placement="bottom"
-                container={ monthView }
-                show={ !!overlay.position }
-                onHide={ onHide }
-                target={ onTarget }
-            >
-                {
-                    ({ props: renderProps }) => (
-                        <Popup
-                            { ...omit( renderProps, "style" ) }
-                            { ...props }
-                            eventComponent={ components.event }
-                            eventWrapperComponent={ components.eventWrapper }
-                            position={ overlay.position }
-                            events={ overlay.events }
-                            slotStart={ overlay.date }
-                            slotEnd={ overlay.end }
-                            onSelect={ handleSelectEvent }
-                            onDoubleClick={ handleDoubleClickEvent }
-                        />
-                    )
-                }
-
-            </Overlay>
+            <Popup
+                { ...props }
+                target={ overlay.target }
+                onClose={ onClose }
+                eventComponent={ components.event }
+                eventWrapperComponent={ components.eventWrapper }
+                position={ overlay.position }
+                events={ overlay.events }
+                slotStart={ overlay.date }
+                slotEnd={ overlay.end }
+                onSelect={ handleSelectEvent }
+                onDoubleClick={ handleDoubleClickEvent }
+            />
         );
     };
 
@@ -337,7 +323,7 @@ const MonthView = props => {
             { popup && renderOverlay() }
         </div>
     );
-};
+});
 
 MonthView.navigate = ( date, action ) => {
     switch ( action ) {
