@@ -37,7 +37,8 @@ Day.navigate = ( date, action ) => {
 Day.title = ( adapter, date, { formats } ) => formatter( adapter, date, formats.dayHeaderFormat );
 
 Day.propTypes = {
-    date: PropTypes.instanceOf( Date ).isRequired
+    date: PropTypes.instanceOf( Date ).isRequired,
+    theme: PropTypes.oneOf( [ "light", "dark" ] ).isRequired,
 };
 
 export default Day;

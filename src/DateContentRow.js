@@ -23,6 +23,7 @@ const propTypes = {
     date: PropTypes.instanceOf( Date ),
     events: PropTypes.array.isRequired,
     range: PropTypes.array.isRequired,
+    theme: PropTypes.oneOf( [ "light", "dark" ] ).isRequired,
 
     rtl: PropTypes.bool,
     renderForMeasure: PropTypes.bool,
@@ -158,6 +159,7 @@ class DateContentRow extends React.Component {
             onSelectStart,
             onSelectEnd,
             longPressThreshold,
+            theme,
             ...props
         } = this.props;
 
@@ -200,6 +202,7 @@ class DateContentRow extends React.Component {
                     onSelectSlot={ this.handleSelectSlot }
                     cellWrapperComponent={ dateCellWrapper }
                     longPressThreshold={ longPressThreshold }
+                    theme={ theme }
                 />
 
                 <div className={ css.rbcRowContent }>

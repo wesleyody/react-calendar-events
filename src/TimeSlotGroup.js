@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import classnames from "classnames";
 
 import TimeSlot from "./TimeSlot";
 import date from "./utils/dates.js";
@@ -14,6 +15,7 @@ const TimeSlotGroup = props => {
             culture,
             resource,
             slotPropGetter,
+            theme,
         } = props;
 
         return (
@@ -26,6 +28,7 @@ const TimeSlotGroup = props => {
                 culture={ culture }
                 isNow={ isNow }
                 resource={ resource }
+                theme={ theme }
                 value={ value }
             />
         );
@@ -46,10 +49,22 @@ const TimeSlotGroup = props => {
         return ret;
     };
 
-    return <div className={ css.rbcTimeslotGroup }> { renderSlices() }</div>;
+    const { theme } = props;
+
+    return (
+        <div
+            className={ classnames(
+                css.rbcTimeslotGroup,
+                theme === "light" ? css.rbcTimeslotGroupLight : css.rbcTimeslotGroupDark,
+            ) }
+        >
+            { renderSlices() }
+        </div>
+    );
 };
 
 TimeSlotGroup.propTypes = {
+    theme: PropTypes.oneOf( [ "light", "dark" ] ).isRequired,
     dayWrapperComponent: elementType,
     timeslots: PropTypes.number.isRequired,
     step: PropTypes.number.isRequired,

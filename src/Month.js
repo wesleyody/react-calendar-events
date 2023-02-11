@@ -23,6 +23,7 @@ const propTypes = {
     adapter: PropTypes.object.isRequired,
     events: PropTypes.array.isRequired,
     date: PropTypes.instanceOf( Date ),
+    theme: PropTypes.oneOf( [ "light", "dark" ] ).isRequired,
 
     min: PropTypes.instanceOf( Date ),
     max: PropTypes.instanceOf( Date ),
@@ -102,6 +103,7 @@ const MonthView = React.forwardRef( ( props, monthView ) => {
         onSelectSlot,
         onShowMore,
         popup,
+        theme,
     } = props;
 
     const slotRow = React.useRef();
@@ -126,7 +128,7 @@ const MonthView = React.forwardRef( ( props, monthView ) => {
                 ref={ weekIdx === 0 ? slotRow : undefined }
                 adapter={ adapter }
                 container={ container }
-                className={ css.rbcMonthRow }
+                className={ cn( css.rbcMonthRow, theme === "light" ? css.rbcMonthRowLight : css.rbcMonthRowDark ) }
                 getNow={ getNow }
                 date={ date }
                 range={ week }
@@ -152,6 +154,7 @@ const MonthView = React.forwardRef( ( props, monthView ) => {
                 eventWrapperComponent={ components.eventWrapper }
                 dateCellWrapper={ components.dateCellWrapper }
                 longPressThreshold={ longPressThreshold }
+                theme={ theme }
             />
         );
     };
@@ -315,7 +318,14 @@ const MonthView = React.forwardRef( ( props, monthView ) => {
     const weeks = chunk( month, 7 );
 
     return (
-        <div ref={ monthView } className={ cn( css.rbcMonthView, className )}>
+        <div
+            ref={ monthView }
+            className={ cn(
+                css.rbcMonthView,
+                theme === "light" ? css.rbcMonthViewLight : css.rbcMonthViewDark,
+                className
+            )}
+        >
             <div className={ cn( css.rbcRow, css.rbcMonthHeader )}>
                 { renderHeaders( weeks[ 0 ], weekdayFormat, culture ) }
             </div>

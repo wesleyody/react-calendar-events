@@ -368,6 +368,7 @@ DayColumn.propTypes = {
     min: PropTypes.instanceOf( Date ).isRequired,
     max: PropTypes.instanceOf( Date ).isRequired,
     getNow: PropTypes.func.isRequired,
+    theme: PropTypes.oneOf( [ "light", "dark" ] ).isRequired,
 
     rtl: PropTypes.bool,
     titleAccessor: accessor,

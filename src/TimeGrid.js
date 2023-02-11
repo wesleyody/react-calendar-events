@@ -198,7 +198,7 @@ const TimeGrid = React.forwardRef( ( props, ref ) => {
     };
 
     const renderHeader = ( range, events, width, resources ) => {
-        const { adapter, messages, selectable, components, } = props;
+        const { adapter, messages, selectable, components, theme, } = props;
 
         const style = {};
         if ( overflowing ) {
@@ -212,7 +212,11 @@ const TimeGrid = React.forwardRef( ( props, ref ) => {
         return (
             <div
                 ref={ headerCell }
-                className={ cn( css.rbcTimeHeader, overflowing && css.rbcOverflowing ) }
+                className={ cn(
+                    css.rbcTimeHeader,
+                    overflowing && css.rbcOverflowing,
+                    theme === "light" ? css.rbcTimeHeaderLight : css.rbcTimeHeaderDark,
+                ) }
                 style={ style }
             >
                 <div className={ css.rbcRow }>
@@ -238,6 +242,7 @@ const TimeGrid = React.forwardRef( ( props, ref ) => {
                         getNow={ getNow }
                         minRows={ 2 }
                         range={ range }
+                        theme={ theme }
                         rtl={ rtl }
                         events={ events }
                         className={ css.rbcAlldayCell }
@@ -337,6 +342,7 @@ const TimeGrid = React.forwardRef( ( props, ref ) => {
         resources,
         allDayAccessor,
         showMultiDayTimes,
+        theme,
     } = props;
     const headerWidth = props.width || gutterWidth;
 
@@ -371,10 +377,19 @@ const TimeGrid = React.forwardRef( ( props, ref ) => {
     );
 
     return (
-        <div ref={ ref } className={ css.rbcTimeView }>
+        <div
+            ref={ ref }
+            className={ cn( css.rbcTimeView, theme === "light" ? css.rbcTimeViewLight : css.rbcTimeViewDark ) }
+        >
             { renderHeader( range, allDayEvents, headerWidth, resources ) }
 
-            <div ref={ content } className={ css.rbcTimeContent }>
+            <div
+                ref={ content }
+                className={ cn(
+                    css.rbcTimeContent,
+                    theme === "light" ? css.rbcTimeContentLight : css.rbcTimeContentDark
+                ) }
+            >
                 <TimeColumn
                     { ...props }
                     showLabels
@@ -393,6 +408,7 @@ TimeGrid.propTypes = {
     adapter: PropTypes.object.isRequired,
     events: PropTypes.array.isRequired,
     resources: PropTypes.array,
+    theme: PropTypes.oneOf( [ "light", "dark" ] ).isRequired,
 
     step: PropTypes.number,
     range: PropTypes.arrayOf( PropTypes.instanceOf( Date ) ),
