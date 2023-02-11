@@ -25,6 +25,7 @@ const TimeColumn = React.forwardRef(({
     min,
     max,
     resource,
+    theme,
 }, ref ) => {
     const renderTimeSliceGroup = ( key, isNow, date, resource ) => {
         return (
@@ -42,6 +43,7 @@ const TimeColumn = React.forwardRef(({
                 showLabels={ showLabels }
                 timeGutterFormat={ timeGutterFormat }
                 dayWrapperComponent={ dayWrapperComponent }
+                theme={ theme }
             />
         );
     };
@@ -90,6 +92,7 @@ TimeColumn.propTypes = {
     type: PropTypes.string.isRequired,
     className: PropTypes.string,
     resource: PropTypes.string,
+    theme: PropTypes.oneOf( [ "light", "dark" ] ).isRequired,
 
     slotPropGetter: PropTypes.func,
     dayPropGetter: PropTypes.func,

@@ -25,7 +25,8 @@ WorkWeek.title = ( adapter, date, { formats } ) => {
 };
 
 WorkWeek.propTypes = {
-    date: PropTypes.instanceOf( Date ).isRequired
+    date: PropTypes.instanceOf( Date ).isRequired,
+    theme: PropTypes.oneOf( [ "light", "dark" ] ).isRequired,
 };
 
 WorkWeek.defaultProps = TimeGrid.defaultProps;

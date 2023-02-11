@@ -30,6 +30,7 @@ const Agenda = ({
     agendaDateFormat,
     eventPropGetter,
     selected,
+    theme,
 }) => {
     const header = React.useRef();
     const tbody = React.useRef();
@@ -150,7 +151,12 @@ const Agenda = ({
     }, [ adjustHeader ] );
 
     return (
-        <div className={ css.rbcAgendaView }>
+        <div
+            className={ classnames(
+                css.rbcAgendaView,
+                theme === "light" ? css.rbcAgendaViewLight : css.rbcAgendaViewDark
+            ) }
+        >
             <table ref="header">
                 <thead>
                     <tr>
@@ -199,6 +205,7 @@ Agenda.title = ( adapter, start, { length = ( length = Agenda.defaultProps.lengt
 };
 
 Agenda.propTypes = {
+    theme: PropTypes.oneOf( [ "light", "dark" ] ).isRequired,
     events: PropTypes.array,
     date: PropTypes.instanceOf( Date ),
     length: PropTypes.number.isRequired,

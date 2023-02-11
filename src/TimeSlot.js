@@ -12,6 +12,7 @@ const TimeSlot = ({
     showLabel,
     isNow,
     content,
+    theme,
 }) => {
     const Wrapper = dayWrapperComponent;
     const { className, style } = ( slotPropGetter && slotPropGetter( value ) ) || {};
@@ -22,6 +23,7 @@ const TimeSlot = ({
                 style={ style }
                 className={ cn(
                     css.rbcTimeSlot,
+                    theme === "light" ? css.rbcTimeSlotLight : css.rbcTimeSlotDark,
                     className,
                     showLabel && css.rbcLabel,
                     isNow && css.rbcNow
@@ -41,7 +43,8 @@ TimeSlot.propTypes = {
     content: PropTypes.string,
     culture: PropTypes.string,
     slotPropGetter: PropTypes.func,
-    resource: PropTypes.string
+    resource: PropTypes.string,
+    theme: PropTypes.oneOf( [ "light", "dark" ] ).isRequired,
 };
 
 TimeSlot.defaultProps = {

@@ -68,6 +68,7 @@ const Calendar = ({
     className,
     elementProps,
     getNow,
+    theme,
     ...props
 }) => {
     const container = React.useRef();
@@ -181,7 +182,12 @@ const Calendar = ({
     return (
         <div
             { ...elementProps }
-            className={ cn( css.rbcCalendar, className, props.rtl ? css.rbcRtl : "" )}
+            className={ cn(
+                css.rbcCalendar,
+                theme === "light" ? css.rbcCalendarLight : css.rbcCalendarDark,
+                className,
+                props.rtl ? css.rbcRtl : ""
+            )}
             style={ style }
         >
             { toolbar && (
@@ -213,6 +219,7 @@ const Calendar = ({
                 onSelectEvent={ handleSelectEvent }
                 onDoubleClickEvent={ handleDoubleClickEvent }
                 onSelectSlot={ handleSelectSlot }
+                theme={ theme }
             />
         </div>
     );
@@ -822,10 +829,13 @@ Calendar.propTypes = {
         time: PropTypes.node,
         event: PropTypes.node,
         showMore: PropTypes.func,
-    } )
+    } ),
+
+    theme: PropTypes.oneOf( [ "light", "dark" ] ),
 };
 
 Calendar.defaultProps = {
+    theme: "light",
     elementProps: {},
     popup: false,
     toolbar: true,

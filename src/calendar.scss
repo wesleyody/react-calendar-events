@@ -21,7 +21,6 @@ button.rbcInput::-moz-focus-inner {
 }
 
 .rbcCalendar {
-    background-color: #fff;
     box-sizing: border-box;
     height: 100%;
     display: -webkit-flex;
@@ -33,6 +32,16 @@ button.rbcInput::-moz-focus-inner {
     -webkit-align-items: stretch;
     -ms-flex-align: stretch;
     align-items: stretch;
+}
+
+.rbcCalendarLight {
+    background-color: #fff;
+}
+
+.rbcCalendarDark {
+    background-color: #121212;
+    background-image: linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05));
+    color: #fff;
 }
 
 .rbcCalendar *,
@@ -68,8 +77,12 @@ button.rbcInput::-moz-focus-inner {
     color: #999999;
 }
 
-.rbcOffRangeBg {
+.rbcOffRangeBgLight {
     background: #F5F5F5;
+}
+
+.rbcOffRangeBgDark {
+    background: #121212;
 }
 
 .rbcHeader {
@@ -271,7 +284,6 @@ button.rbcInput::-moz-focus-inner {
 
 .rbcMonthView {
     position: relative;
-    border: 1px solid #DDD;
     display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
@@ -289,17 +301,38 @@ button.rbcInput::-moz-focus-inner {
     height: 100%;
 }
 
-.rbcMonthView .rbcHeader {
+.rbcMonthViewLight {
+    border: 1px solid #DDD;
+}
+
+.rbcMonthViewDark {
+    border: 1px solid #424242;
+}
+
+.rbcMonthViewLight .rbcHeader {
     border-bottom: 1px solid #DDD;
 }
 
-.rbcMonthView .rbcHeader + .rbcHeader {
+.rbcMonthViewDark .rbcHeader {
+    border-bottom: 1px solid #424242;
+}
+
+.rbcMonthViewLight .rbcHeader + .rbcHeader {
     border-left: 1px solid #DDD;
 }
 
-.rbcRtl .rbcMonthView .rbcHeader + .rbcHeader {
+.rbcMonthViewDark .rbcHeader + .rbcHeader {
+    border-left: 1px solid #424242;
+}
+
+.rbcRtl .rbcMonthViewLight .rbcHeader + .rbcHeader {
     border-left-width: 0;
     border-right: 1px solid #DDD;
+}
+
+.rbcRtl .rbcMonthViewDark .rbcHeader + .rbcHeader {
+    border-left-width: 0;
+    border-right: 1px solid #424242;
 }
 
 .rbcMonthHeader {
@@ -329,8 +362,12 @@ button.rbcInput::-moz-focus-inner {
     height: 100%;
 }
 
-.rbcMonthRow + .rbcMonthRow {
+.rbcMonthRowLight + .rbcMonthRowLight {
     border-top: 1px solid #DDD;
+}
+
+.rbcMonthRowDark + .rbcMonthRowDark {
+    border-top: 1px solid #424242;
 }
 
 .rbcDateCell {
@@ -364,13 +401,24 @@ button.rbcInput::-moz-focus-inner {
     overflow: hidden;
 }
 
-.rbcDayBg + .rbcDayBg {
+.rbcDayBgLight + .rbcDayBgLight {
     border-left: 1px solid #DDD;
 }
 
-.rbcRtl .rbcDayBg + .rbcDayBg {
-    border-left-width: 0;
+.rbcRtl .rbcDayBgLight + .rbcDayBgLight {
     border-right: 1px solid #DDD;
+}
+
+.rbcDayBgDark + .rbcDayBgDark {
+    border-left: 1px solid #424242;
+}
+
+.rbcRtl .rbcDayBgDark + .rbcDayBgDark {
+    border-right: 1px solid #424242;
+}
+
+.rbcRtl .rbcDayBgLight + .rbcDayBgLight, .rbcRtl .rbcDayBgDark + .rbcDayBgDark {
+    border-left-width: 0;
 }
 
 .rbcOverlay {
@@ -407,9 +455,16 @@ button.rbcInput::-moz-focus-inner {
     overflow: auto;
 }
 
+.rbcAgendaViewLight table {
+    border: 1px solid #DDD;
+}
+
+.rbcAgendaViewDark table {
+    border: 1px solid #424242;
+}
+
 .rbcAgendaView table {
     width: 100%;
-    border: 1px solid #DDD;
 }
 
 .rbcAgendaView table tbody > tr > td {
@@ -423,23 +478,46 @@ button.rbcInput::-moz-focus-inner {
     text-transform: lowercase;
 }
 
-.rbcAgendaView table tbody > tr > td + td {
+.rbcAgendaViewLight table tbody > tr > td + td {
     border-left: 1px solid #DDD;
+}
+
+.rbcAgendaViewDark table tbody > tr > td + td {
+    border-left: 1px solid #424242;
+}
+
+.rbcRtl .rbcAgendaViewLight table tbody > tr > td + td {
+    border-right: 1px solid #DDD;
+}
+
+.rbcRtl .rbcAgendaViewDark table tbody > tr > td + td {
+    border-right: 1px solid #424242;
 }
 
 .rbcRtl .rbcAgendaView table tbody > tr > td + td {
     border-left-width: 0;
-    border-right: 1px solid #DDD;
 }
 
-.rbcAgendaView table tbody > tr + tr {
+.rbcAgendaViewLight table tbody > tr + tr {
     border-top: 1px solid #DDD;
+}
+
+.rbcAgendaViewDark table tbody > tr + tr {
+    border-top: 1px solid #424242;
 }
 
 .rbcAgendaView table thead > tr > th {
     padding: 3px 5px;
     text-align: left;
     border-bottom: 1px solid #DDD;
+}
+
+.rbcAgendaViewLight table thead > tr > th {
+    border-bottom: 1px solid #DDD;
+}
+
+.rbcAgendaViewDark table thead > tr > th {
+    border-bottom: 1px solid #424242;
 }
 
 .rbcRtl .rbcAgendaView table thead > tr > th {
@@ -484,7 +562,6 @@ button.rbcInput::-moz-focus-inner {
 }
 
 .rbcTimeslotGroup {
-    border-bottom: 1px solid #DDD;
     min-height: 40px;
     display: -webkit-flex;
     display: -ms-flexbox;
@@ -492,6 +569,14 @@ button.rbcInput::-moz-focus-inner {
     -webkit-flex-flow: column nowrap;
     -ms-flex-flow: column nowrap;
     flex-flow: column nowrap;
+}
+
+.rbcTimeslotGroupLight {
+    border-bottom: 1px solid #DDD;
+}
+
+.rbcTimeslotGroupDark {
+    border-bottom: 1px solid #424242;
 }
 
 .rbcTimeGutter,
@@ -583,8 +668,12 @@ button.rbcInput::-moz-focus-inner {
     display: inline-block;
 }
 
-.rbcDaySlot .rbcTimeSlot {
+.rbcDaySlot .rbcTimeSlotLight {
     border-top: 1px solid #f7f7f7;
+}
+
+.rbcDaySlot .rbcTimeSlotDark {
+    border-top: 1px solid #424242;
 }
 
 .rbcTimeSlot {
@@ -622,8 +711,15 @@ button.rbcInput::-moz-focus-inner {
     -ms-flex: 1;
     flex: 1;
     width: 100%;
-    border: 1px solid #DDD;
     min-height: 0;
+}
+
+.rbcTimeViewLight {
+    border: 1px solid #DDD;
+}
+
+.rbcTimeViewDark {
+    border: 1px solid #424242;
 }
 
 .rbcTimeView .rbcTimeGutter {
@@ -658,30 +754,48 @@ button.rbcInput::-moz-focus-inner {
     flex-direction: column;
 }
 
-.rbcTimeHeader.rbcOverflowing {
+.rbcTimeHeaderLight.rbcOverflowing {
     border-right: 1px solid #DDD;
 }
 
-.rbcRtl .rbcTimeHeader.rbcOverflowing {
+.rbcTimeHeaderDark.rbcOverflowing {
+    border-right: 1px solid #424242;
+}
+
+.rbcRtl .rbcTimeHeaderLight.rbcOverflowing {
     border-right-width: 0;
     border-left: 1px solid #DDD;
 }
 
-.rbcTimeHeader > .rbcRow > * + * {
+.rbcRtl .rbcTimeHeaderDark.rbcOverflowing {
+    border-right-width: 0;
+    border-left: 1px solid #424242;
+}
+
+.rbcTimeHeaderLight > .rbcRow > * + * {
     border-left: 1px solid #DDD;
 }
 
-.rbcRtl .rbcTimeHeader > .rbcRow > * + * {
+.rbcTimeHeaderDark > .rbcRow > * + * {
+    border-left: 1px solid #424242;
+}
+
+.rbcRtl .rbcTimeHeaderLight > .rbcRow > * + * {
     border-left-width: 0;
     border-right: 1px solid #DDD;
 }
 
-.rbcTimeHeader > .rbcRow:first-child {
+.rbcRtl .rbcTimeHeaderDark > .rbcRow > * + * {
+    border-left-width: 0;
+    border-right: 1px solid #424242;
+}
+
+.rbcTimeHeaderLight > .rbcRow:first-child, .rbcTimeHeaderLight > .rbcRow.rbcRow-resource {
     border-bottom: 1px solid #DDD;
 }
 
-.rbcTimeHeader > .rbcRow.rbcRow-resource {
-    border-bottom: 1px solid #DDD;
+.rbcTimeHeaderDark > .rbcRow:first-child, .rbcTimeHeaderDark > .rbcRow.rbcRow-resource {
+    border-bottom: 1px solid #424242;
 }
 
 .rbcTimeHeader .rbcGutterCell {
@@ -705,9 +819,16 @@ button.rbcInput::-moz-focus-inner {
     -ms-flex-align: start;
     align-items: flex-start;
     width: 100%;
-    border-top: 2px solid #DDD;
     overflow-y: auto;
     position: relative;
+}
+
+.rbcTimeContentLight {
+    border-top: 2px solid #DDD;
+}
+
+.rbcTimeContentDark {
+    border-top: 2px solid #424242;
 }
 
 .rbcTimeContent > .rbcTimeGutter {
@@ -716,13 +837,22 @@ button.rbcInput::-moz-focus-inner {
     flex: none;
 }
 
-.rbcTimeContent > * + * > * {
+.rbcTimeContentLight > * + * > * {
     border-left: 1px solid #DDD;
 }
 
-.rbcRtl .rbcTimeContent > * + * > * {
+.rbcTimeContentDark > * + * > * {
+    border-left: 1px solid #424242;
+}
+
+.rbcRtl .rbcTimeContentLight > * + * > * {
     border-left-width: 0;
     border-right: 1px solid #DDD;
+}
+
+.rbcRtl .rbcTimeContentDark > * + * > * {
+    border-left-width: 0;
+    border-right: 1px solid #424242;
 }
 
 .rbcTimeContent > .rbcDaySlot {

@@ -140,7 +140,7 @@ class BackgroundCells extends React.Component {
     };
 
     render () {
-        const { range, cellWrapperComponent: Wrapper, dayPropGetter, date: currentDate } = this.props;
+        const { range, cellWrapperComponent: Wrapper, dayPropGetter, date: currentDate, theme } = this.props;
 
         return (
             <div className={ css.rbcRowBg } ref={ this.node }>
@@ -155,10 +155,11 @@ class BackgroundCells extends React.Component {
                                 style={ styles }
                                 className={ cn(
                                     css.rbcDayBg,
+                                    theme === "light" ? css.rbcDayBgLight : css.rbcDayBgDark,
                                     className,
                                     currentDate &&
-                                    dates.month( currentDate ) !== dates.month( date ) &&
-                                    css.rbcOffRangeBg
+                                        dates.month( currentDate ) !== dates.month( date ) &&
+                                        ( theme === "light" ? css.rbcOffRangeBgLight : css.rbcOffRangeBgDark )
                                 )}
                             />
                         </Wrapper>
@@ -171,6 +172,7 @@ class BackgroundCells extends React.Component {
 }
 
 BackgroundCells.propTypes = {
+    theme: PropTypes.oneOf( [ "light", "dark" ] ).isRequired,
     date: PropTypes.instanceOf( Date ),
     cellWrapperComponent: elementType,
     container: PropTypes.func,
