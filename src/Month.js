@@ -211,6 +211,7 @@ const MonthView = React.forwardRef( ( props, monthView ) => {
         return (
             <Popup
                 { ...props }
+                theme={ theme }
                 target={ overlay.target }
                 onClose={ onClose }
                 eventComponent={ components.event }

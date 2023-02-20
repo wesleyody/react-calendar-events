@@ -421,25 +421,40 @@ button.rbcInput::-moz-focus-inner {
     border-left-width: 0;
 }
 
-.rbcOverlay {
+.rbcOverlayLight, .rbcOverlayDark {
     position: absolute;
     z-index: 5;
     overflow: auto;
     max-height: 100%;
-    border: 1px solid #e5e5e5;
-    background-color: #fff;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
     padding: 10px;
 }
 
-.rbcOverlay > * + * {
+.rbcOverlayLight {
+    border: 1px solid #e5e5e5;
+    background-color: #fff;
+}
+
+.rbcOverlayDark {
+    border: 1px solid #424242;
+    background-color: #121212;
+}
+
+.rbcOverlayLight > * + *, .rbcOverlayDark > * + * {
     margin-top: 1px;
 }
 
-.rbcOverlayHeader {
-    border-bottom: 1px solid #e5e5e5;
+.rbcOverlayHeaderLight, .rbcOverlayHeaderDark {
     margin: -10px -10px 5px -10px;
     padding: 2px 10px;
+}
+
+.rbcOverlayHeaderLight {
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.rbcOverlayHeaderDark {
+    border-bottom: 1px solid #424242;
 }
 
 .rbcAgendaView {

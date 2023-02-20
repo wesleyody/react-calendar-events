@@ -10,6 +10,7 @@ import { elementType, dateFormat } from "./utils/propTypes";
 import css from "./calendar.scss";
 
 const propTypes = {
+    theme: PropTypes.oneOf( [ "light", "dark" ] ).isRequired,
     target: PropTypes.object,
     onClose: PropTypes.func,
     position: PropTypes.object,
@@ -36,6 +37,7 @@ const Popup = ({
     target,
     position,
     popupOffset = 5,
+    theme,
     ...props
 }) => {
     const container = React.useRef();
@@ -86,8 +88,12 @@ const Popup = ({
     };
 
     return (
-        <div ref={ container } style={ style } className={ css.rbcOverlay }>
-            <div className={ css.rbcOverlayHeader }>
+        <div
+            ref={ container }
+            style={ style }
+            className={ theme === "dark" ? css.rbcOverlayDark : css.rbcOverlayLight }
+        >
+            <div className={ theme === "dark" ? css.rbcOverlayHeaderDark : css.rbcOverlayHeaderLight }>
                 { props.adapter.format(
                     props.slotStart,
                     props.dayHeaderFormat,
