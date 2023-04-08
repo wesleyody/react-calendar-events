@@ -425,7 +425,7 @@ button.rbcInput::-moz-focus-inner {
     position: absolute;
     z-index: 5;
     overflow: auto;
-    max-height: 100%;
+    max-height: calc(100% - 16px);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
     padding: 10px;
 }

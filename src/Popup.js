@@ -1,8 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
 import getOffset from "dom-helpers/offset";
-import getScrollTop from "dom-helpers/scrollTop";
-import getScrollLeft from "dom-helpers/scrollLeft";
 
 import EventCell from "./EventCell";
 import { isSelected } from "./utils/selection";
@@ -29,6 +27,7 @@ const propTypes = {
 };
 
 const Popup = ({
+    container,
     events,
     selected,
     eventComponent,
@@ -40,36 +39,37 @@ const Popup = ({
     theme,
     ...props
 }) => {
-    const container = React.useRef();
-    const [ topOffset, setTopOffset ] = React.useState( 0 );
-    const [ leftOffset, setLeftOffset ] = React.useState( 0 );
+    const wrapper = React.useRef();
 
-    React.useEffect( () => {
-        const { top, left, width, height } = getOffset( target.current );
-        const viewBottom = window.innerHeight + getScrollTop( window );
-        const viewRight = window.innerWidth + getScrollLeft( window );
+    const styles = React.useMemo(() => {
+        const { top, left, width, height } = getOffset( target );
+        const { height: viewHeight, width: viewWidth } = getOffset( container );
+
         const bottom = top + height;
         const right = left + width;
 
-        if ( bottom > viewBottom || right > viewRight ) {
-            let topOffset;
-            let leftOffset;
+        const style = {
+            maxWidth: ( position.width * 2 ) + (popupOffset.x || +popupOffset || 0),
+            minWidth: position.width,
+        };
 
-            if ( bottom > viewBottom ) {
-                topOffset = bottom - viewBottom + (popupOffset.y || +popupOffset || 0);
-            }
-            if ( right > viewRight ) {
-                leftOffset = right - viewRight + (popupOffset.x || +popupOffset || 0);
-            }
-
-            setTopOffset( topOffset );
-            setLeftOffset( leftOffset );
+        if ( bottom > ( viewHeight / 2 ) ) {
+            style.bottom = viewHeight - ( position.top + position.height );
+        } else {
+            style.top = position.top;
         }
-    }, [ target, popupOffset ] );
+        if ( right > ( viewWidth / 2 ) ) {
+            style.right = viewWidth - ( position.left + position.width );
+        } else {
+            style.left = position.left;
+        }
+
+        return style;
+    }, [ container, popupOffset, position, target ]);
 
     React.useEffect( () => {
         const handleClickOutside = event => {
-            if ( container.current && !container.current.contains( event.target ) ) {
+            if ( wrapper.current && !wrapper.current.contains( event.target ) ) {
                 onClose();
             }
         };
@@ -79,18 +79,10 @@ const Popup = ({
         };
     }, [ onClose ]);
 
-    const { left, width, top } = position;
-
-    const style = {
-        top: Math.max( 0, top - topOffset ),
-        left: left - leftOffset,
-        width: width + width
-    };
-
     return (
         <div
-            ref={ container }
-            style={ style }
+            ref={ wrapper }
+            style={ styles }
             className={ theme === "dark" ? css.rbcOverlayDark : css.rbcOverlayLight }
         >
             <div className={ theme === "dark" ? css.rbcOverlayHeaderDark : css.rbcOverlayHeaderLight }>
