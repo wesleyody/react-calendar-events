@@ -9,7 +9,7 @@ import css from "./calendar.scss";
 
 const propTypes = {
     theme: PropTypes.oneOf( [ "light", "dark" ] ).isRequired,
-    target: PropTypes.object,
+    container: PropTypes.object,
     onClose: PropTypes.func,
     position: PropTypes.object,
     popupOffset: PropTypes.oneOfType( [
@@ -33,7 +33,6 @@ const Popup = ({
     eventComponent,
     eventWrapperComponent,
     onClose,
-    target,
     position,
     popupOffset = 5,
     theme,
@@ -42,11 +41,10 @@ const Popup = ({
     const wrapper = React.useRef();
 
     const styles = React.useMemo(() => {
-        const { top, left, width, height } = getOffset( target );
         const { height: viewHeight, width: viewWidth } = getOffset( container );
 
-        const bottom = top + height;
-        const right = left + width;
+        const bottom = position.top + position.height;
+        const right = position.left + position.width;
 
         const style = {
             maxWidth: ( position.width * 2 ) + (popupOffset.x || +popupOffset || 0),
@@ -65,7 +63,7 @@ const Popup = ({
         }
 
         return style;
-    }, [ container, popupOffset, position, target ]);
+    }, [ container, popupOffset, position ]);
 
     React.useEffect( () => {
         const handleClickOutside = event => {

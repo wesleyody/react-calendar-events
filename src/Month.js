@@ -213,7 +213,6 @@ const MonthView = React.forwardRef( ( props, monthView ) => {
                 { ...props }
                 container={ monthView.current }
                 theme={ theme }
-                target={ overlay.target }
                 onClose={ onClose }
                 eventComponent={ components.event }
                 eventWrapperComponent={ components.eventWrapper }
@@ -270,14 +269,14 @@ const MonthView = React.forwardRef( ( props, monthView ) => {
         notify( onDoubleClickEvent, args );
     };
 
-    const handleShowMore = ( events, date, cell, slot, target ) => {
+    const handleShowMore = ( events, date, cell, slot ) => {
         //cancel any pending selections so only the event click goes through.
         clearSelection();
 
         if ( popup ) {
             const position = getPosition( cell, monthView.current );
 
-            setOverlay({ date, events, position, target });
+            setOverlay({ date, events, position });
         } else {
             notify( onDrillDown, [ date, getDrilldownView( date ) || views.DAY ] );
         }

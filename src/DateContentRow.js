@@ -72,7 +72,7 @@ class DateContentRow extends React.Component {
         onSelectSlot( range.slice( slot.start, slot.end + 1 ), slot );
     };
 
-    handleShowMore = ( slot, target ) => {
+    handleShowMore = slot => {
         const { range, onShowMore } = this.props;
         const row = this.root.current.getElementsByClassName( css.rbcRowBg )[ 0 ];
 
@@ -85,7 +85,7 @@ class DateContentRow extends React.Component {
             .filter( seg => isSegmentInSlot( seg, slot ) )
             .map( seg => seg.event );
 
-        onShowMore( events, range[ slot - 1 ], cell, slot, target );
+        onShowMore( events, range[ slot - 1 ], cell, slot );
     };
 
     getContainer = () => {
