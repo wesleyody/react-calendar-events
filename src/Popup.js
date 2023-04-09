@@ -52,10 +52,13 @@ const Popup = ({
         };
 
         if ( bottom > ( viewHeight / 2 ) ) {
-            style.bottom = viewHeight - ( position.top + position.height );
+            style.bottom = viewHeight - bottom;
+            style.maxHeight = bottom;
         } else {
             style.top = position.top;
+            style.maxHeight = viewHeight - position.top;
         }
+        style.maxHeight = style.maxHeight - (popupOffset.y || +popupOffset || 0);
         if ( right > ( viewWidth / 2 ) ) {
             style.right = viewWidth - ( position.left + position.width );
         } else {
