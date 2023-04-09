@@ -38,7 +38,7 @@ const EventEndingRow = props => {
 
     const showMore = ( slot, e ) => {
         e.preventDefault();
-        props.onShowMore( slot, e.target );
+        props.onShowMore( slot );
     };
 
     const rowSegments = eventLevels( segments ).levels[ 0 ];
